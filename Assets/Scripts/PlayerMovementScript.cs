@@ -16,7 +16,21 @@ public class PlayerMovementScript : BasicMoveable
     /// <returns>Check succeed</returns>
     public override bool CanMove(Vector3 moveDirection)
     {
-        return GameLogic.Instance.PlayerMoveCondition(moveDirection);
+        IsNextTickScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
+        var result = GameLogic.Instance.PlayerMoveCondition(moveDirection);
+        if (result)
+        {
+            return true;
+        }
+        IsNextTickScheduled = false;
+        return false;
+    }
+    
+    public override void OnStartTick(Vector3 playerMoveDir)
+    {
+        // print("Player start tick");
+        DoScheduledMove();
+        StartTickPosition = transform.position;
     }
 
     private void Awake()
@@ -49,27 +63,13 @@ public class PlayerMovementScript : BasicMoveable
                                (Math.Abs(moveDirectionInput.y) == 1 && moveDirectionInput.x == 0)
                                ) && !GameLogic.Instance.waitingForAllEndTickToFinish && _moveIntervalTimer <= 0)
             {
-                IsNextTickScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
                 if (CanMove(moveDirectionInput))
                 {
                     ScheduleMove(moveDirectionInput);
                     GameLogic.Instance.StartTick(moveDirectionInput);
                 }
-                else
-                {
-                    IsNextTickScheduled = false; // False if player cannot move
-                    // Future ways may include replacing the isScheduledMoveAndBeforeTickEnd variable and using a
-                    // Exception list for the Start Tick's and End Tick's Schedule method, especially for the boulder.
-                    // Boulder's tick schedule declines the Crate Tick's method.
-                }
                 _postMoveAndTickEnd = true;
             }
         }
-    }
-    
-    public override void OnStartTick(Vector3 playerMoveDir)
-    {
-        // print("Player start tick");
-        DoScheduledMove();
     }
 }

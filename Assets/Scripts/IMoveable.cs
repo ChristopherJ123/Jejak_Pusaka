@@ -6,6 +6,7 @@ public interface IMoveable
     Vector3 EndTickPosition { get; set; }
     Vector3 LastMoveDir { get; set; }
     Vector3 ScheduledMoveDir { get; set; }
+    bool IsIceMoveable { get; set; }
     bool IsStationary();
     bool IsPlayerPushing(Vector3 moveDirection);
     bool CanMove(Vector3 moveDir);

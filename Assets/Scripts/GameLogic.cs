@@ -100,13 +100,22 @@ public class GameLogic : MonoBehaviour
         var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ITickable>();
 
-        foreach (var tickable in allTickables)
+        var tickables = allTickables as ITickable[] ?? allTickables.ToArray();
+        foreach (var tickable in tickables)
         {
             if (excludeTypes.Length > 0 && excludeTypes.Contains(tickable.GetType()))
             {
                 continue;
             }
             tickable.OnStartTick(playerMoveDir);
+        }
+        
+        // After start tick, do all the post start tick methods
+        // Remember: This method should only contain configuration variables only. This method should only be used
+        // for functions that cannot be achievable with random ordering from the former Start Tick method.
+        foreach (var tickable in tickables)
+        {
+            tickable.PostStartTick(PlayerMovementScript.Instance.LastMoveDir);
         }
     }
 
@@ -132,9 +141,7 @@ public class GameLogic : MonoBehaviour
             // Kinda bad practice tho ngl, but there isn't a performance warning so
             var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
                 .OfType<ITickable>();
-            
-            var tickables = allTickables as ITickable[] ?? allTickables.ToArray();
-            foreach (var tickable in tickables)
+            foreach (var tickable in allTickables)
             {
                 if (tickable.IsStartTicking)
                 {
@@ -142,14 +149,6 @@ public class GameLogic : MonoBehaviour
                 }
             }
             waitingForAllStartTickToFinish = false;
-            
-            // After start tick, do all the post start tick methods
-            // Remember: This method should only contain configuration variables only. This method should only be used
-            // for functions that cannot be achievable with random ordering from the former Start Tick method.
-            foreach (var tickable in tickables)
-            {
-                tickable.PostStartTick(PlayerMovementScript.Instance.LastMoveDir);
-            }
             EndTick();
         }
         
@@ -174,6 +173,7 @@ public class GameLogic : MonoBehaviour
             {
                 tickable.PostEndTick();
             }
+            
             waitingForAllEndTickToFinish = false;
             timeToCheckSchedule = true;
         }

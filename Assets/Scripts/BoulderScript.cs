@@ -236,6 +236,7 @@ public class BoulderScript : BasicMoveable
     public override void Start()
     {
         base.Start();
+        IsIceMoveable = false;
         
         Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
         foreach (Vector3 direction in allTrigger)

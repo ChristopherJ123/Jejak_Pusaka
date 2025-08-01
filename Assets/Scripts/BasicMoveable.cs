@@ -10,6 +10,8 @@ public class BasicMoveable : BasicTickable, IMoveable
     public virtual Vector3 LastMoveDir { get; set; }
     public virtual Vector3 ScheduledMoveDir { get; set; }
     
+    public bool IsIceMoveable { get; set; }
+    
     /// <summary>
     /// Tickable object is idle.
     /// </summary>
@@ -59,6 +61,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     public override void OnStartTick(Vector3 playerMoveDir)
     {
         base.OnStartTick(playerMoveDir);
+        
         DoScheduledMove();
         
         if (IsPlayerPushing(playerMoveDir))
@@ -92,6 +95,9 @@ public class BasicMoveable : BasicTickable, IMoveable
     public override void PostEndTick()
     {
         base.PostEndTick();
+        
+        // Ditaruh sini soalnya agar EndTickPosition ini kalau di panggil di OnEndTick() dia akan pasti reference
+        // ke EndTickPosition EndTick sebelumnya, daripada setengah2 bisa random kalau ditaruh di OnEndTick()
         EndTickPosition = transform.position;
     }
     
@@ -99,6 +105,8 @@ public class BasicMoveable : BasicTickable, IMoveable
     public virtual void Start()
     {
         LayerStopsMovement = LayerMask.GetMask("Collision");
+        
+        IsIceMoveable = true;
         
         MovePoint = transform.GetChild(0);
         MovePoint.parent = null;
