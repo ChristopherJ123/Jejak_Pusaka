@@ -1,0 +1,342 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class BoulderScript : MonoBehaviour, ITickable, IMoveable
+{
+    private LayerMask _layerStopsMovement;
+    private Transform _movePoint;
+    private Vector3 _moveDirection;
+    public bool isTriggeredNear;
+    private Vector3[] _triggerFar =
+    {
+        Vector3.up + Vector3.left,
+        Vector3.right + Vector3.up,
+        Vector3.down + Vector3.right,
+        Vector3.left + Vector3.down,
+    };
+    private Vector3[] _triggerNear =
+    {
+        Vector3.up,
+        Vector3.down,
+        Vector3.left,
+        Vector3.right,
+    };
+    private Dictionary<Vector3, GameObject> _entityInAreaBefore = new();
+    private Dictionary<Vector3, GameObject> _entityInArea = new();
+
+    public Vector3 LastMoveDir { get; set; }
+    public bool IsNextTickScheduled { get; set; }
+    public Vector3 ScheduledMoveDir { get; set; }
+    
+    /// <summary>
+    /// Boulder is idle.
+    /// </summary>
+    /// <returns>bool</returns>
+    public bool IsStationary()
+    {
+        return Vector3.Distance(transform.position, _movePoint.position) == 0;
+    }
+    
+    public bool IsPlayerPushing(Vector3 moveDirection)
+    {
+        // Same method with crate's
+        return PlayerMovementScript.Instance.IsNextTickScheduled &&
+               PlayerMovementScript.Instance.transform.position + moveDirection == transform.position;
+    }
+
+    public bool IsBoulderPushing()
+    {
+        var entity = Physics2D.OverlapPoint(transform.position + Vector3.up, _layerStopsMovement);
+        if (entity)
+        {
+            // print(transform.name + " is detecting a boulder above");
+
+            // boulder di atase
+            if (entity.CompareTag("Boulder") && entity.transform.position + Vector3.down == transform.position)
+            {
+                var boulder = entity.GetComponent<BoulderScript>();
+                // dengan condition boulder dischedule move, artinya yang bisa mendorong cuma boulder yang
+                // sudah triggered dan sedang moving (aka. di schedule move).
+                if (boulder.IsNextTickScheduled)
+                {
+                    return true;
+                }
+            }
+            // else
+            // {
+            //     print(transform.name + ", " + entity.transform.position + ", " + transform.position + ", " + entity.CompareTag("Boulder"));
+            // }
+        }
+        // else
+        // {
+        //     print(transform.name + " is not detecting any overlap");
+        // }
+        return false;
+    }
+    
+    // Called at movement start tick
+    public bool CanMove(Vector3 moveDir)
+    {
+        if (moveDir == Vector3.up) return false;
+        
+        if (!Physics2D.OverlapPoint(_movePoint.transform.position + moveDir, _layerStopsMovement))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public void DoScheduledMove()
+    {
+        if (IsNextTickScheduled)
+        {
+            Move(ScheduledMoveDir);
+            LastMoveDir = ScheduledMoveDir;
+            ScheduledMoveDir = Vector3.zero;
+        }
+    }
+
+    public void Move(Vector3 moveDirection)
+    {
+        _movePoint.transform.position += moveDirection;
+        LastMoveDir = moveDirection;
+        IsStartTicking = true;
+    }
+
+    public void ScheduleMove(Vector3 moveDir)
+    {
+        IsNextTickScheduled = true;
+        ScheduledMoveDir = moveDir;
+        // GameLogic.Instance.StartTick(Vector3.down, new []{typeof(CrateScript)}); // Without crate script
+    }
+
+    public void ScheduleFall()
+    {
+        var fallDirection = CanFall();
+        if (fallDirection != Vector3.zero)
+        {
+            isTriggeredNear = true;
+            ScheduleMove(fallDirection);
+        }
+    }
+    
+    private Vector3 CanFall()
+    {
+        Collider2D collide = Physics2D.OverlapPoint(_movePoint.position + Vector3.down, _layerStopsMovement);
+        if (collide)
+        {
+            if (collide.CompareTag("Boulder"))
+            {
+                if (!GameLogic.Instance.getGameObjectAtCoordinates(_movePoint.position + Vector3.left) && 
+                    !GameLogic.Instance.getGameObjectAtCoordinates(_movePoint.position + Vector3.down + Vector3.left))
+                {
+                    // Fall left
+                    return new Vector3(-1, -1, 0);
+                } if (!GameLogic.Instance.getGameObjectAtCoordinates(_movePoint.position + Vector3.right) && 
+                      !GameLogic.Instance.getGameObjectAtCoordinates(_movePoint.position + Vector3.down + Vector3.right))
+                {
+                    // Fall right
+                    return new Vector3(1, -1, 0);
+                }
+            }
+            return Vector3.zero;
+        }
+        if (_movePoint.position + Vector3.down == PlayerMovementScript.Instance.transform.position)
+        {
+            return Vector3.zero;
+        }
+        
+        // Debug.Log("Returning 1");
+        // 0: none, 1: down, 2: left, 3: right
+        return Vector3.down;
+    }
+    
+    bool AreDictionariesDifferent<TKey, TValue>(Dictionary<TKey, TValue> a, Dictionary<TKey, TValue> b)
+    {
+        if (a.Count != b.Count) return true;
+
+        foreach (var kvp in a)
+        {
+            if (!b.TryGetValue(kvp.Key, out TValue valueB)) return true;
+
+            if (!EqualityComparer<TValue>.Default.Equals(kvp.Value, valueB)) return true;
+        }
+
+        return false; // Dictionaries are equal
+    }
+
+    private void Awake()
+    {
+        // triggerScript = GetComponentInChildren<BoulderTriggerScript>();
+        // _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovementScript>();
+        _layerStopsMovement = LayerMask.GetMask("Collision");
+        
+        _movePoint = transform.GetChild(0);
+        _movePoint.parent = null;
+        
+        // Crate excluded for ticking to fix crate's IsPlayerPushing detecting true for every boulder's tick causing a
+        // crate to move unexpectedly.
+        // ExcludedTickablesForTicking = new[] {typeof(CrateScript)};
+    }
+
+    private void Start()
+    {
+        Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
+        foreach (Vector3 direction in allTrigger)
+        {
+            Collider2D entity = Physics2D.OverlapPoint(transform.position + direction, _layerStopsMovement);
+            if (entity)
+            {
+                _entityInArea.Add(direction, entity.gameObject);
+                _entityInAreaBefore.Add(direction, entity.gameObject);
+            }
+        }
+    }
+
+    private void Update()
+    {
+        // Animation moving
+        transform.position = Vector3.MoveTowards(transform.position, _movePoint.position, 5f * Time.deltaTime);
+        if (IsStationary())
+        {
+            IsStartTicking = false;
+        }     
+    }
+
+    public bool IsStartTicking { get; set; }
+    public bool IsEndTicking { get; set; }
+
+    public void OnStartTick(Vector3 playerMoveDir)
+    {
+        // print(transform.name + " start tick");
+        DoScheduledMove();
+        
+        if (IsPlayerPushing(playerMoveDir))
+        {
+            if (CanMove(playerMoveDir))
+            {
+                Move(playerMoveDir);
+            }
+        }
+
+        if (IsBoulderPushing())
+        {
+            if (CanMove(Vector3.down))
+            {
+                Move(Vector3.down);
+            }
+        }
+    }
+
+    public void PostStartTick(Vector3 playerMoveDir)
+    {
+        
+    }
+
+    public void OnEndTick()
+    {
+        // Move to here so that after the start tick is finished doing schedule, it resets the bool in the EndTick.
+        // This is so to better job isolation.
+        IsNextTickScheduled = false;
+        if (LastMoveDir != Vector3.zero)
+        {
+            // Was moved and that means is triggered
+            isTriggeredNear = true;
+            ScheduleFall();
+            return;
+        }
+        
+        _entityInArea.Clear();
+        Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
+        foreach (Vector3 direction in allTrigger)
+        {
+            Collider2D entity = Physics2D.OverlapPoint(transform.position + direction, _layerStopsMovement);
+            if (entity)
+            {
+                _entityInArea.Add(direction, entity.gameObject);
+            }
+        }
+        
+        if (AreDictionariesDifferent(_entityInArea, _entityInAreaBefore))
+        {
+            // Left the trigger
+            if (_entityInArea.Count < _entityInAreaBefore.Count)
+            {
+                // print("Calling left the trigger");
+                // fall
+                isTriggeredNear = true;
+                ScheduleFall();
+                return;
+            }
+            
+            // Step onto farside trigger
+            int farSideTriggeredCount = 0;
+            foreach (Vector3 direction in _triggerFar)
+            {
+                Collider2D entity = Physics2D.OverlapPoint(transform.position + direction, _layerStopsMovement);
+                if (
+                    // Sebelumnya gaada, setelahnya ada entity
+                    (entity && !_entityInAreaBefore.ContainsKey(direction)) 
+                    ||
+                    // Make sure we choose the different entity (gabisa null/gaada makanya ada kondisi atas)
+                    (entity &&
+                     _entityInAreaBefore.TryGetValue(direction, out var beforeEntity) &&
+                     _entityInArea.TryGetValue(direction, out var currentEntity) &&
+                     beforeEntity != currentEntity)
+                    ||
+                    // Sebelumnya ada, terus gaada (kasus buat dorong crate bisa)
+                    (!entity && _entityInAreaBefore.ContainsKey(direction))
+                    )
+                {
+                    if (isTriggeredNear)
+                    {
+					    // print("Calling farside trigger");
+                        // fall
+                        ScheduleFall();
+                        return;
+                    }
+                    farSideTriggeredCount++;
+                    if (farSideTriggeredCount == 2)
+                    {
+                        print("Calling farside trigger twice");
+                        // fall
+                        isTriggeredNear = true;
+                        ScheduleFall();
+                        return;
+                    }
+                }
+            }
+
+            // Step onto nearside trigger
+            foreach (Vector3 direction in _triggerNear)
+            {
+                Collider2D entity = Physics2D.OverlapPoint(transform.position + direction, _layerStopsMovement);
+                if (
+                    (entity && !_entityInAreaBefore.ContainsKey(direction)) 
+                    ||
+                    (entity &&
+                     _entityInAreaBefore.TryGetValue(direction, out var beforeEntity) &&
+                     _entityInArea.TryGetValue(direction, out var currentEntity) &&
+                     beforeEntity != currentEntity)
+                    )
+                {
+                    // print("Calling nearside trigger");
+                    isTriggeredNear = true;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            isTriggeredNear = false;
+        }
+        _entityInAreaBefore = new Dictionary<Vector3, GameObject>(_entityInArea);
+    }
+
+    public void PostEndTick()
+    {
+        
+    }
+}
