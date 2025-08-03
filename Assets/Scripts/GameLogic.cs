@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,7 +14,12 @@ public class GameLogic : MonoBehaviour
         Instance = this;
     }
 
-    public GameObject getGameObjectAtCoordinates(Vector3 coordinates)
+    /// <summary>
+    /// Helper Function to get game object at a certain coordinate in the world.
+    /// </summary>
+    /// <param name="coordinates">Game object coordinates</param>
+    /// <returns></returns>
+    public GameObject GetGameObjectAtCoordinates(Vector3 coordinates)
     {
         foreach (Transform child in transform)
         {
@@ -25,67 +29,6 @@ public class GameLogic : MonoBehaviour
             }
         }
         return null;
-    }
-
-    public List<T> GetAllChildrenOfTag<T>(string tag)
-    {
-        List<T> childrens = new List<T>();
-
-        foreach (Transform child in transform)
-        {
-            if (child.CompareTag(tag))
-            {
-                T component = child.GetComponent<T>();
-                if (component != null) childrens.Add(component);
-            }
-        }
-        
-        return childrens;
-    }
-
-    /// <summary>
-    /// Determine whether Player can move in a certain direction.
-    /// </summary>
-    /// <param name="playerMoveDir">Player move direction</param>
-    /// <returns></returns>
-    public bool PlayerMoveCondition(Vector3 playerMoveDir)
-    {
-        var boulders = GetAllChildrenOfTag<BoulderScript>("Boulder");
-        var crates = GetAllChildrenOfTag<CrateScript>("Crate");
-
-        foreach (var boulder in boulders)
-        {
-            if (boulder.IsPlayerPushing(playerMoveDir))
-            {
-                if (boulder.CanMove(playerMoveDir))
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        foreach (var crate in crates)
-        {
-            // print(crate.transform.name);
-            if (crate.IsPlayerPushing(playerMoveDir))
-            {
-                // print(crate.transform.name + " IsPlayerPushing");
-                if (crate.CanMove(playerMoveDir))
-                {
-                    // print(crate.transform.name + " CanMove");
-                    return true;
-                }
-                else
-                {
-                    print(crate.transform.name + " Can't Move");
-                }
-                return false;
-            }
-        }
-
-        // print("Returning true for normal movement");
-        return true;
     }
     
     /// <summary>

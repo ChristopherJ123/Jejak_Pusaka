@@ -2,6 +2,7 @@
 
 public class BasicMoveable : BasicTickable, IMoveable
 {
+    protected LayerMask LayerAllowMovement;
     protected LayerMask LayerStopsMovement;
     protected Transform MovePoint;
     
@@ -29,9 +30,14 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual bool CanMove(Vector3 moveDir)
     {
-        if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
+        // First checks if it is out of bounds (not touching any Tile Layer)
+        if (Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
-            return true;
+            // Then it checks if it is colliding with another Collision Layer
+            if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
+            {
+                return true;
+            }        
         }
         return false;
     }
@@ -95,15 +101,20 @@ public class BasicMoveable : BasicTickable, IMoveable
     public override void PostEndTick()
     {
         base.PostEndTick();
-        
+        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 100) + 10;
+
         // Ditaruh sini soalnya agar EndTickPosition ini kalau di panggil di OnEndTick() dia akan pasti reference
         // ke EndTickPosition EndTick sebelumnya, daripada setengah2 bisa random kalau ditaruh di OnEndTick()
         EndTickPosition = transform.position;
     }
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public virtual void Start()
+    public override void Start()
     {
+        SpriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 100) + 10;
+
+        LayerAllowMovement = LayerMask.GetMask("Tile");
         LayerStopsMovement = LayerMask.GetMask("Collision");
         
         IsIceMoveable = true;

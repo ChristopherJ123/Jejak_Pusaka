@@ -64,7 +64,7 @@ public class BoulderScript : BasicMoveable
     private void ScheduleFall()
     {
         var fallDirection = CanFall();
-        if (fallDirection != Vector3.zero)
+        if (fallDirection != Vector3.zero && CanMove(fallDirection))
         {
             isTriggeredNear = true;
             ScheduleMove(fallDirection);
@@ -78,13 +78,13 @@ public class BoulderScript : BasicMoveable
         {
             if (collide.CompareTag("Boulder"))
             {
-                if (!GameLogic.Instance.getGameObjectAtCoordinates(MovePoint.position + Vector3.left) && 
-                    !GameLogic.Instance.getGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.left))
+                if (!GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.left) && 
+                    !GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.left))
                 {
                     // Fall left
                     return new Vector3(-1, -1, 0);
-                } if (!GameLogic.Instance.getGameObjectAtCoordinates(MovePoint.position + Vector3.right) && 
-                      !GameLogic.Instance.getGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.right))
+                } if (!GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.right) && 
+                      !GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.right))
                 {
                     // Fall right
                     return new Vector3(1, -1, 0);
