@@ -54,17 +54,17 @@ public class BoulderScript : BasicMoveable
     }
     
     // Called at movement start tick
-    public override bool CanMove(Vector3 moveDir)
+    public override bool CanMoveOrPinballRedirect(ref Vector3 moveDir)
     {
         if (moveDir == Vector3.up) return false;
         
-        return base.CanMove(moveDir);
+        return base.CanMoveOrPinballRedirect(ref moveDir);
     }
 
     private void ScheduleFall()
     {
         var fallDirection = CanFall();
-        if (fallDirection != Vector3.zero && CanMove(fallDirection))
+        if (fallDirection != Vector3.zero && CanMoveOrPinballRedirect(ref fallDirection))
         {
             isTriggeredNear = true;
             ScheduleMove(fallDirection);
@@ -92,7 +92,7 @@ public class BoulderScript : BasicMoveable
             }
             return Vector3.zero;
         }
-        if (MovePoint.position + Vector3.down == PlayerMovementScript.Instance.transform.position)
+        if (MovePoint.position + Vector3.down == PlayerScript.Instance.transform.position)
         {
             return Vector3.zero;
         }
@@ -123,14 +123,10 @@ public class BoulderScript : BasicMoveable
 
         if (IsBoulderPushing())
         {
-            print(transform.name + " should be being pushed down by another boulder");
-            if (CanMove(Vector3.down))
+            var down = Vector3.down;
+            if (CanMoveOrPinballRedirect(ref down))
             {
-                Move(Vector3.down);
-            }
-            else
-            {
-                print("but something went wrong??");
+                Move(down);
             }
         }
     }
@@ -237,6 +233,7 @@ public class BoulderScript : BasicMoveable
     {
         base.Start();
         IsIceMoveable = false;
+        IsPinballMoveable = false;
         
         Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
         foreach (Vector3 direction in allTrigger)

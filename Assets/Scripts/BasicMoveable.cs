@@ -12,6 +12,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     public virtual Vector3 ScheduledMoveDir { get; set; }
     
     public bool IsIceMoveable { get; set; }
+    public bool IsPinballMoveable { get; set; }
     
     /// <summary>
     /// Tickable object is idle.
@@ -24,16 +25,19 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual bool IsPlayerPushing(Vector3 moveDirection)
     {
-        return PlayerMovementScript.Instance.IsNextTickScheduled &&
-               PlayerMovementScript.Instance.transform.position + moveDirection == transform.position;
+        return PlayerScript.Instance.IsNextTickScheduled &&
+               PlayerScript.Instance.transform.position + moveDirection == transform.position;
     }
 
-    public virtual bool CanMove(Vector3 moveDir)
+    public virtual bool CanMoveOrPinballRedirect(ref Vector3 moveDir)
     {
-        // First checks if it is out of bounds (not touching any Tile Layer)
+        // First check if there is a pinball move redirect
+        moveDir = PinballGlobalScript.PinballMoveRedirectIfAny(gameObject, moveDir);
+        
+        // Second check if it is out of bounds (not touching any Tile Layer)
         if (Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
-            // Then it checks if it is colliding with another Collision Layer
+            // Thirdly it checks if it is not colliding with another Collision Layer
             if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
             {
                 return true;
@@ -60,6 +64,8 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual void Move(Vector3 moveDir)
     {
+        // DateTime now = DateTime.Now;
+        // print($"Moving {transform.name} Current Time: {now:HH:mm:ss.fff}");
         MovePoint.transform.position += moveDir;
         LastMoveDir = moveDir;
         IsStartTicking = true;
@@ -70,9 +76,9 @@ public class BasicMoveable : BasicTickable, IMoveable
         
         DoScheduledMove();
         
-        if (IsPlayerPushing(playerMoveDir))
+        if (!IsNextTickScheduled && IsPlayerPushing(playerMoveDir))
         {
-            if (CanMove(playerMoveDir))
+            if (CanMoveOrPinballRedirect(ref playerMoveDir))
             {
                 Move(playerMoveDir);
             }
@@ -111,13 +117,12 @@ public class BasicMoveable : BasicTickable, IMoveable
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        SpriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 100) + 10;
-
+        base.Start();
         LayerAllowMovement = LayerMask.GetMask("Tile");
         LayerStopsMovement = LayerMask.GetMask("Collision");
         
         IsIceMoveable = true;
+        IsPinballMoveable = true;
         
         MovePoint = transform.GetChild(0);
         MovePoint.parent = null;

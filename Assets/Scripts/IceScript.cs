@@ -22,14 +22,15 @@ public class IceScript : BasicTickable
                 {
                     if (moveable.IsIceMoveable)
                     {
+                        // This condition means that this moveable is stationary ontop the ice.
                         if (moveable.StartTickPosition == entity.transform.position) continue;
-                        // IsNextTickScheduled = true;
                         if (moveable.IsStationary())
                         {
-                            if (moveable.CanMove(moveable.LastMoveDir))
+                            var moveableLastMoveDir = moveable.LastMoveDir;
+                            if (moveable.CanMoveOrPinballRedirect(ref moveableLastMoveDir))
                             {
-                                moveable.ScheduleMove(moveable.LastMoveDir);
-                                // GameLogic.Instance.StartTick(moveable.LastMoveDir);
+                                // print("Moving " + entity.name);
+                                moveable.ScheduleMove(moveableLastMoveDir);
                             }
                         }
                     }

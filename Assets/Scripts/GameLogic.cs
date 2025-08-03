@@ -39,6 +39,7 @@ public class GameLogic : MonoBehaviour
     /// <returns></returns>
     public void StartTick(Vector3 playerMoveDir, params Type[] excludeTypes)
     {
+        // print("start tick");
         waitingForAllStartTickToFinish = true;
         var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ITickable>();
@@ -58,12 +59,13 @@ public class GameLogic : MonoBehaviour
         // for functions that cannot be achievable with random ordering from the former Start Tick method.
         foreach (var tickable in tickables)
         {
-            tickable.PostStartTick(PlayerMovementScript.Instance.LastMoveDir);
+            tickable.PostStartTick(PlayerScript.Instance.LastMoveDir);
         }
     }
 
     public void EndTick(params Type[] excludeTypes)
     {
+        // print("end tick");
         waitingForAllEndTickToFinish = true;
         var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ITickable>();
@@ -132,7 +134,7 @@ public class GameLogic : MonoBehaviour
                 if (tickable.IsNextTickScheduled)
                 {
                     // print("There is something scheduled");
-                    StartTick(PlayerMovementScript.Instance.LastMoveDir);
+                    StartTick(PlayerScript.Instance.ScheduledMoveDir);
                     timeToCheckSchedule = false;
                     return;
                 }

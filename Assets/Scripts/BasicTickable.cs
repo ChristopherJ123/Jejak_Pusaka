@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class BasicTickable : MonoBehaviour, ITickable
@@ -32,11 +31,12 @@ public class BasicTickable : MonoBehaviour, ITickable
     {
         if (gameObject.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
         {
-            spriteRenderer.sortingOrder = -9999;
+            SpriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+            spriteRenderer.sortingOrder = -(int)(transform.position.y * 100) + 10;
         }
         else if (gameObject.TryGetComponent<TilemapRenderer>(out var tilemapRenderer))
         {
-            tilemapRenderer.sortingOrder = -9999;
+            tilemapRenderer.sortingOrder = -10000;
         }
     }
 }

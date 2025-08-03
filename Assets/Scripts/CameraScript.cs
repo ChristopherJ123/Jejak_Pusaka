@@ -57,7 +57,7 @@ public class CameraScript : MonoBehaviour
         else
         {
             // Camera follow player
-            transform.position = new Vector3(PlayerMovementScript.Instance.transform.position.x, PlayerMovementScript.Instance.transform.position.y, transform.position.z);
+            transform.position = new Vector3(PlayerScript.Instance.transform.position.x, PlayerScript.Instance.transform.position.y, transform.position.z);
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
