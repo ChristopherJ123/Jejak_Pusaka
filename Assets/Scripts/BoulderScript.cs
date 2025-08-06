@@ -35,85 +35,55 @@ public class BoulderScript : BasicMoveable
                 var boulder = entity.GetComponent<BoulderScript>();
                 // dengan condition boulder dischedule move, artinya yang bisa mendorong cuma boulder yang
                 // sudah triggered dan sedang moving (aka. di schedule move).
+                // UPDATE: Pakai IsTriggered yang artinya sudah pernah di schedule agar konsisten
                 
-                if (boulder.IsNextTickScheduled)
+                if (boulder.IsTriggered)
                 {
                     return true;
                 }
             }
-            // else
-            // {
-            //     print(transform.name + ", " + entity.transform.position + ", " + transform.position + ", " + entity.CompareTag("Boulder"));
-            // }
         }
-        // else
-        // {
-        //     print(transform.name + " is not detecting any overlap");
-        // }
         return false;
     }
     
     // Called at movement start tick
-    public override bool CanMoveOrPinballRedirect(ref Vector3 moveDir)
+    public override bool CanMoveOrRedirect(ref Vector3 moveDir)
     {
-        if (moveDir == Vector3.up) return false;
+        // 1. If there's any UP moving then return false. Boulder cannot go up.
+        if (Mathf.Approximately(moveDir.y, 1)) return false;
         
-        return base.CanMoveOrPinballRedirect(ref moveDir);
-    }
-
-    private void ScheduleFall()
-    {
-        var fallDirection = CanFall();
-        if (fallDirection != Vector3.zero && CanMoveOrPinballRedirect(ref fallDirection))
-        {
-            isTriggeredNear = true;
-            ScheduleMove(fallDirection);
-        }
-    }
-    
-    private Vector3 CanFall()
-    {
+        // 2. Check if hit another boulder then move somewhere if can.
         Collider2D collide = Physics2D.OverlapPoint(MovePoint.position + Vector3.down, LayerStopsMovement);
         if (collide)
         {
             if (collide.CompareTag("Boulder"))
             {
-                if (!GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.left) && 
-                    !GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.left))
+                if (!GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.left) && 
+                    !GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.left))
                 {
                     // Fall left
-                    return new Vector3(-1, -1, 0);
-                } if (!GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.right) && 
-                      !GameLogic.Instance.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.right))
+                    moveDir = new Vector3(-1, -1, 0);
+                } else if (!GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.right) && 
+                      !GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.right))
                 {
                     // Fall right
-                    return new Vector3(1, -1, 0);
+                    moveDir = new Vector3(1, -1, 0);
                 }
             }
-            return Vector3.zero;
-        }
-        if (MovePoint.position + Vector3.down == PlayerScript.Instance.transform.position)
-        {
-            return Vector3.zero;
         }
         
-        // Debug.Log("Returning 1");
-        // 0: none, 1: down, 2: left, 3: right
-        return Vector3.down;
+        // 3 & etc
+        return base.CanMoveOrRedirect(ref moveDir);
     }
-    
-    bool AreDictionariesDifferent<TKey, TValue>(Dictionary<TKey, TValue> a, Dictionary<TKey, TValue> b)
+
+    private void ScheduleFall()
     {
-        if (a.Count != b.Count) return true;
-
-        foreach (var kvp in a)
+        var fallDirection = Vector3.down;
+        if (CanMoveOrRedirect(ref fallDirection))
         {
-            if (!b.TryGetValue(kvp.Key, out TValue valueB)) return true;
-
-            if (!EqualityComparer<TValue>.Default.Equals(kvp.Value, valueB)) return true;
+            isTriggeredNear = true;
+            ScheduleMove(fallDirection, true);
         }
-
-        return false; // Dictionaries are equal
     }
     
     public override void OnStartTick(Vector3 playerMoveDir)
@@ -124,7 +94,7 @@ public class BoulderScript : BasicMoveable
         if (IsBoulderPushing())
         {
             var down = Vector3.down;
-            if (CanMoveOrPinballRedirect(ref down))
+            if (CanMoveOrRedirect(ref down))
             {
                 Move(down);
             }
@@ -137,6 +107,7 @@ public class BoulderScript : BasicMoveable
         
         if (LastMoveDir != Vector3.zero)
         {
+            // print("am triggered");
             // Was moved and that means is triggered
             isTriggeredNear = true;
             ScheduleFall();
@@ -153,7 +124,7 @@ public class BoulderScript : BasicMoveable
             }
         }
         
-        if (AreDictionariesDifferent(_entityInArea, _entityInAreaBefore))
+        if (GameLogic.AreDictionariesDifferent(_entityInArea, _entityInAreaBefore))
         {
             // Left the trigger
             if (_entityInArea.Count < _entityInAreaBefore.Count)
@@ -234,6 +205,7 @@ public class BoulderScript : BasicMoveable
         base.Start();
         IsIceMoveable = false;
         IsPinballMoveable = false;
+        IsSlopeMoveable = true;
         
         Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
         foreach (Vector3 direction in allTrigger)

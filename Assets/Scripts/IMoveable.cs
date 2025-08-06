@@ -8,10 +8,11 @@ public interface IMoveable
     Vector3 ScheduledMoveDir { get; set; }
     bool IsIceMoveable { get; set; }
     bool IsPinballMoveable { get; set; }
+    bool IsSlopeMoveable { get; set; }
     bool IsStationary();
     bool IsPlayerPushing(Vector3 moveDirection);
-    bool CanMoveOrPinballRedirect(ref Vector3 moveDir);
-    void ScheduleMove(Vector3 moveDir);
+    bool CanMoveOrRedirect(ref Vector3 moveDir);
+    void ScheduleMove(Vector3 moveDir, bool doExtraTickLoop = false);
     void DoScheduledMove();
     void Move(Vector3 moveDir);
 }

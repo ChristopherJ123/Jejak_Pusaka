@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -19,9 +20,9 @@ public class GameLogic : MonoBehaviour
     /// </summary>
     /// <param name="coordinates">Game object coordinates</param>
     /// <returns></returns>
-    public GameObject GetGameObjectAtCoordinates(Vector3 coordinates)
+    public static GameObject GetGameObjectAtCoordinates(Vector3 coordinates)
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in Instance.transform)
         {
             if (child.position == coordinates)
             {
@@ -29,6 +30,29 @@ public class GameLogic : MonoBehaviour
             }
         }
         return null;
+    }
+    
+    /// <summary>
+    /// Helper Function to check if Dictionary A and B are different. Useful when comparing surrounding objects
+    /// from a gameObject's perspective. E.g. Boulder, arrow.
+    /// </summary>
+    /// <param name="a">Dictionary A</param>
+    /// <param name="b">Dictionary B</param>
+    /// <typeparam name="TKey">Key</typeparam>
+    /// <typeparam name="TValue">Value</typeparam>
+    /// <returns>boolean</returns>
+    public static bool AreDictionariesDifferent<TKey, TValue>(Dictionary<TKey, TValue> a, Dictionary<TKey, TValue> b)
+    {
+        if (a.Count != b.Count) return true;
+
+        foreach (var kvp in a)
+        {
+            if (!b.TryGetValue(kvp.Key, out TValue valueB)) return true;
+
+            if (!EqualityComparer<TValue>.Default.Equals(kvp.Value, valueB)) return true;
+        }
+
+        return false; // Dictionaries are equal
     }
     
     /// <summary>
@@ -128,12 +152,24 @@ public class GameLogic : MonoBehaviour
             // print("Is checking schedule");
             var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
                 .OfType<ITickable>();
-            
-            foreach (var tickable in allTickables)
+
+            var tickables = allTickables as ITickable[] ?? allTickables.ToArray();
+            foreach (var tickable in tickables)
             {
                 if (tickable.IsNextTickScheduled)
                 {
                     // print("There is something scheduled");
+                    StartTick(PlayerScript.Instance.ScheduledMoveDir);
+                    timeToCheckSchedule = false;
+                    return;
+                }
+            }
+
+            foreach (var tickable in tickables)
+            {
+                if (tickable.DoExtraTickLoop)
+                {
+                    // print("There is something with Extra tick");
                     StartTick(PlayerScript.Instance.ScheduledMoveDir);
                     timeToCheckSchedule = false;
                     return;

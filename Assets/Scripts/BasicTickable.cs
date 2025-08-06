@@ -4,7 +4,9 @@ using UnityEngine.Tilemaps;
 public class BasicTickable : MonoBehaviour, ITickable
 {
     protected SpriteRenderer SpriteRenderer;
+    public virtual bool IsTriggered { get; set; }
     public virtual bool IsNextTickScheduled { get; set; }
+    public virtual bool DoExtraTickLoop { get; set; }
     public virtual bool IsStartTicking { get; set; }
     public virtual bool IsEndTicking { get; set; }
     public virtual void OnStartTick(Vector3 playerMoveDir)

@@ -27,7 +27,7 @@ public class IceScript : BasicTickable
                         if (moveable.IsStationary())
                         {
                             var moveableLastMoveDir = moveable.LastMoveDir;
-                            if (moveable.CanMoveOrPinballRedirect(ref moveableLastMoveDir))
+                            if (moveable.CanMoveOrRedirect(ref moveableLastMoveDir))
                             {
                                 // print("Moving " + entity.name);
                                 moveable.ScheduleMove(moveableLastMoveDir);

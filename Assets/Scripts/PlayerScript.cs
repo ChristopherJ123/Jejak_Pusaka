@@ -24,7 +24,7 @@ public class PlayerScript : BasicMoveable
         {
             if (moveable.IsPlayerPushing(playerMoveDir))
             {
-                if (moveable.CanMoveOrPinballRedirect(ref playerMoveDir))
+                if (moveable.CanMoveOrRedirect(ref playerMoveDir))
                 {
                     return true;
                 }
@@ -48,17 +48,20 @@ public class PlayerScript : BasicMoveable
     /// </summary>
     /// <param name="moveDir">Player move dir</param>
     /// <returns>Check succeed</returns>
-    public override bool CanMoveOrPinballRedirect(ref Vector3 moveDir)
+    public override bool CanMoveOrRedirect(ref Vector3 moveDir)
     {
         IsNextTickScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
         
         // First check if player hits a pinball and needs a moveDir redirect
-        moveDir = PinballGlobalScript.PinballMoveRedirectIfAny(gameObject, moveDir);
+        moveDir = PinballGlobalScript.MoveRedirectFromPinballIfAny(gameObject, moveDir);
+        
+        // Second check if there is a slope move redirect
+        moveDir = SlopeGlobalScript.MoveRedirectFromSlopeIfAny(gameObject, moveDir);
 
-        // Second check if player can move entities, more detailed see method docs
+        // Thirdly check if player can move entities, more detailed see method docs
         var result = PlayerMoveCondition(moveDir);
         
-        // Third checks if it is out of bounds (not touching any Tile Layer)
+        // Lastly checks if it is out of bounds (not touching any Tile Layer)
         if (result && Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
             return true;
@@ -104,7 +107,7 @@ public class PlayerScript : BasicMoveable
                                (Math.Abs(moveDirectionInput.y) == 1 && moveDirectionInput.x == 0)
                                ) && !GameLogic.Instance.waitingForAllEndTickToFinish && _moveIntervalTimer <= 0)
             {
-                if (CanMoveOrPinballRedirect(ref moveDirectionInput))
+                if (CanMoveOrRedirect(ref moveDirectionInput))
                 {
                     ScheduleMove(moveDirectionInput);
                     GameLogic.Instance.StartTick(moveDirectionInput);

@@ -23,6 +23,7 @@ public class HoleScript : MonoBehaviour, ITickable
     }
 
     public bool IsNextTickScheduled { get; set; }
+    public bool DoExtraTickLoop { get; set; }
     public bool IsStartTicking { get; set; }
     public bool IsEndTicking { get; set; }
 

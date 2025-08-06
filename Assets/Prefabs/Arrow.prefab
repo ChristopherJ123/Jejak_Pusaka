@@ -42,10 +42,10 @@ GameObject:
   - component: {fileID: 4759763014268138025}
   - component: {fileID: 6430683737972204575}
   - component: {fileID: 6314767088065793901}
-  - component: {fileID: 8788293655497119406}
+  - component: {fileID: 3174074352352995189}
   m_Layer: 6
   m_Name: Arrow
-  m_TagString: Crate
+  m_TagString: Arrow
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -167,7 +167,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &8788293655497119406
+--- !u!114 &3174074352352995189
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,6 +176,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1027633719348444791}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1a5750d9cb1d58479ead86e89fd2bf9, type: 3}
+  m_Script: {fileID: 11500000, guid: 943da11448ebefc4c8816da9f0edd5e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTriggeredNear: 0

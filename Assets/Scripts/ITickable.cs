@@ -4,9 +4,12 @@ using UnityEngine;
 public interface ITickable
 { 
     bool IsNextTickScheduled { get; set; }
+    /// <summary>
+    /// Complements IsNextTickScheduled if needed extra Tick after scheduling finishes.
+    /// </summary>
+    bool DoExtraTickLoop { get; set; }
     bool IsStartTicking { get; set; }
     bool IsEndTicking { get; set; }
-    
     /// <summary>
     /// Use OnStartTick to indicate the logic that works with random ordering of all Tickable elements.
     /// </summary>

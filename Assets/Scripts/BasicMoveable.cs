@@ -13,6 +13,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     
     public bool IsIceMoveable { get; set; }
     public bool IsPinballMoveable { get; set; }
+    public bool IsSlopeMoveable { get; set; }
     
     /// <summary>
     /// Tickable object is idle.
@@ -29,15 +30,18 @@ public class BasicMoveable : BasicTickable, IMoveable
                PlayerScript.Instance.transform.position + moveDirection == transform.position;
     }
 
-    public virtual bool CanMoveOrPinballRedirect(ref Vector3 moveDir)
+    public virtual bool CanMoveOrRedirect(ref Vector3 moveDir)
     {
         // First check if there is a pinball move redirect
-        moveDir = PinballGlobalScript.PinballMoveRedirectIfAny(gameObject, moveDir);
+        moveDir = PinballGlobalScript.MoveRedirectFromPinballIfAny(gameObject, moveDir);
         
-        // Second check if it is out of bounds (not touching any Tile Layer)
+        // Second check if there is a slope move redirect
+        moveDir = SlopeGlobalScript.MoveRedirectFromSlopeIfAny(gameObject, moveDir);
+        
+        // Thirdly check if it is out of bounds (not touching any Tile Layer)
         if (Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
-            // Thirdly it checks if it is not colliding with another Collision Layer
+            // Lastly it checks if it is not colliding with another Collision Layer
             if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
             {
                 return true;
@@ -46,12 +50,14 @@ public class BasicMoveable : BasicTickable, IMoveable
         return false;
     }
 
-    public virtual void ScheduleMove(Vector3 moveDir)
+    public void ScheduleMove(Vector3 moveDir, bool doExtraTickLoop = false)
     {
+        IsTriggered = true;
         IsNextTickScheduled = true;
         ScheduledMoveDir = moveDir;
+        if (doExtraTickLoop) DoExtraTickLoop = true;
     }
-
+    
     public virtual void DoScheduledMove()
     {
         if (IsNextTickScheduled)
@@ -78,7 +84,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         
         if (!IsNextTickScheduled && IsPlayerPushing(playerMoveDir))
         {
-            if (CanMoveOrPinballRedirect(ref playerMoveDir))
+            if (CanMoveOrRedirect(ref playerMoveDir))
             {
                 Move(playerMoveDir);
             }
@@ -90,6 +96,11 @@ public class BasicMoveable : BasicTickable, IMoveable
         base.PostStartTick(playerMoveDir);
         StartTickPosition = transform.position;
 
+        // Turn off DoExtraTickLoop after IsNextTickScheduled is done (On the next tick)
+        if (!IsNextTickScheduled)
+        {
+            if (DoExtraTickLoop) DoExtraTickLoop = false;
+        }
         // Finished doing scheduled move from OnStartTick
         // Called here so that other Tickable that depends on this variable won't get unexpected result from
         // OnStartTick()'s random ordering.
@@ -123,6 +134,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         
         IsIceMoveable = true;
         IsPinballMoveable = true;
+        IsSlopeMoveable = false;
         
         MovePoint = transform.GetChild(0);
         MovePoint.parent = null;
