@@ -53,10 +53,10 @@ public class PlayerScript : BasicMoveable
         IsNextTickScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
         
         // First check if player hits a pinball and needs a moveDir redirect
-        moveDir = PinballGlobalScript.MoveRedirectFromPinballIfAny(gameObject, moveDir);
+        moveDir = PinballGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
         
         // Second check if there is a slope move redirect
-        moveDir = SlopeGlobalScript.MoveRedirectFromSlopeIfAny(gameObject, moveDir);
+        moveDir = SlopeGlobalScript.RedirectMoveFromSlopeIfAny(gameObject, moveDir);
 
         // Thirdly check if player can move entities, more detailed see method docs
         var result = PlayerMoveCondition(moveDir);

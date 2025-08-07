@@ -17,7 +17,7 @@ public class PinballGlobalScript : MonoBehaviour
     /// <param name="entity">Current entity</param>
     /// <param name="initialMoveDir">Initial move direction</param>
     /// <returns>Redirected moveDir if any else initialMoveDir.</returns>
-    public static Vector3 MoveRedirectFromPinballIfAny(GameObject entity, Vector3 initialMoveDir)
+    public static Vector3 RedirectMoveFromPinballIfAny(GameObject entity, Vector3 initialMoveDir)
     {
         if (_allPinballs == null) return initialMoveDir;
         if (entity.TryGetComponent<IMoveable>(out var moveable))

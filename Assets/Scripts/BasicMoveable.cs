@@ -6,15 +6,17 @@ public class BasicMoveable : BasicTickable, IMoveable
     protected LayerMask LayerStopsMovement;
     protected Transform MovePoint;
     
-    public virtual Vector3 StartTickPosition { get; set; }
-    public virtual Vector3 EndTickPosition { get; set; }
-    public virtual Vector3 LastMoveDir { get; set; }
-    public virtual Vector3 ScheduledMoveDir { get; set; }
+    public Vector3 StartTickPosition { get; set; }
+    public Vector3 EndTickPosition { get; set; }
+    public Vector3 LastMoveDir { get; set; }
+    public Vector3 ScheduledMoveDir { get; set; }
     
     public bool IsIceMoveable { get; set; }
     public bool IsPinballMoveable { get; set; }
     public bool IsSlopeMoveable { get; set; }
-    
+    public bool IsPinballSlopeMoveable { get; set; }
+    public bool IsBoulderSlopeMoveable { get; set; }
+
     /// <summary>
     /// Tickable object is idle.
     /// </summary>
@@ -32,16 +34,22 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual bool CanMoveOrRedirect(ref Vector3 moveDir)
     {
-        // First check if there is a pinball move redirect
-        moveDir = PinballGlobalScript.MoveRedirectFromPinballIfAny(gameObject, moveDir);
+        // 1. check if there is a pinball move redirect
+        moveDir = PinballGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
         
-        // Second check if there is a slope move redirect
-        moveDir = SlopeGlobalScript.MoveRedirectFromSlopeIfAny(gameObject, moveDir);
+        // 2. check if there is a slope move redirect
+        moveDir = SlopeGlobalScript.RedirectMoveFromSlopeIfAny(gameObject, moveDir);
         
-        // Thirdly check if it is out of bounds (not touching any Tile Layer)
+        // 3. check if there is a boulder slope move redirect
+        moveDir = SlopeGlobalScript.RedirectMoveFromBoulderIfAny(gameObject, moveDir);
+        
+        // 4. check if there is a pinball slope move redirect
+        moveDir = SlopeGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
+        
+        // 5. check if it is out of bounds (not touching any Tile Layer)
         if (Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
-            // Lastly it checks if it is not colliding with another Collision Layer
+            // 6. it checks if it is not colliding with another Collision Layer
             if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
             {
                 return true;
@@ -135,6 +143,8 @@ public class BasicMoveable : BasicTickable, IMoveable
         IsIceMoveable = true;
         IsPinballMoveable = true;
         IsSlopeMoveable = false;
+        IsPinballSlopeMoveable = false;
+        IsBoulderSlopeMoveable = false;
         
         MovePoint = transform.GetChild(0);
         MovePoint.parent = null;

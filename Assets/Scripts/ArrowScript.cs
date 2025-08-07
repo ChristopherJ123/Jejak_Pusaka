@@ -200,6 +200,8 @@ public class ArrowScript : BasicMoveable, IDirectional
         IsIceMoveable = false;
         IsPinballMoveable = false;
         IsSlopeMoveable = true;
+        IsPinballSlopeMoveable = true;
+        IsBoulderSlopeMoveable = true;
         SetDirection(transform.eulerAngles.z);
     }
 }

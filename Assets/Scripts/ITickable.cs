@@ -2,7 +2,11 @@
 using UnityEngine;
 
 public interface ITickable
-{ 
+{
+    /// <summary>
+    /// The next predetermined random bit to use
+    /// </summary>
+    bool NextRandom { get; set; }
     bool IsNextTickScheduled { get; set; }
     /// <summary>
     /// Complements IsNextTickScheduled if needed extra Tick after scheduling finishes.

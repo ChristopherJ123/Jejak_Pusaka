@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4759763014268138025}
   - component: {fileID: 6430683737972204575}
   - component: {fileID: 6314767088065793901}
-  - component: {fileID: 2974837838622802717}
+  - component: {fileID: 6133660572712859360}
   m_Layer: 6
   m_Name: Pinball
   m_TagString: Pinball
@@ -135,7 +135,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &2974837838622802717
+--- !u!114 &6133660572712859360
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,6 +144,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1027633719348444791}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b439b7e61e243c88c1c75c7e8a0a18d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f7113ea115c44a394f193c24da12b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -9,6 +9,14 @@ public interface IMoveable
     bool IsIceMoveable { get; set; }
     bool IsPinballMoveable { get; set; }
     bool IsSlopeMoveable { get; set; }
+    /// <summary>
+    /// Entity will slide of Pinball (e.g. Arrows hitting pinball, boulder hitting pinball)
+    /// </summary>
+    bool IsPinballSlopeMoveable { get; set; }
+    /// <summary>
+    /// Entity will slide of Boulder (e.g. Boulder hitting boulder, arrow hitting boulder)
+    /// </summary>
+    bool IsBoulderSlopeMoveable { get; set; }
     bool IsStationary();
     bool IsPlayerPushing(Vector3 moveDirection);
     bool CanMoveOrRedirect(ref Vector3 moveDir);

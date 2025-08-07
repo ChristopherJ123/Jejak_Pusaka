@@ -49,31 +49,11 @@ public class BoulderScript : BasicMoveable
     // Called at movement start tick
     public override bool CanMoveOrRedirect(ref Vector3 moveDir)
     {
-        // 1. If there's any UP moving then return false. Boulder cannot go up.
-        if (Mathf.Approximately(moveDir.y, 1)) return false;
-        
-        // 2. Check if hit another boulder then move somewhere if can.
-        Collider2D collide = Physics2D.OverlapPoint(MovePoint.position + Vector3.down, LayerStopsMovement);
-        if (collide)
-        {
-            if (collide.CompareTag("Boulder"))
-            {
-                if (!GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.left) && 
-                    !GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.left))
-                {
-                    // Fall left
-                    moveDir = new Vector3(-1, -1, 0);
-                } else if (!GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.right) && 
-                      !GameLogic.GetGameObjectAtCoordinates(MovePoint.position + Vector3.down + Vector3.right))
-                {
-                    // Fall right
-                    moveDir = new Vector3(1, -1, 0);
-                }
-            }
-        }
-        
-        // 3 & etc
-        return base.CanMoveOrRedirect(ref moveDir);
+        // First
+        var canMove = base.CanMoveOrRedirect(ref moveDir);
+
+        // Last. If there's any UP moving then return false. Boulder cannot go up.
+        return !Mathf.Approximately(moveDir.y, 1) && canMove;
     }
 
     private void ScheduleFall()
@@ -206,6 +186,8 @@ public class BoulderScript : BasicMoveable
         IsIceMoveable = false;
         IsPinballMoveable = false;
         IsSlopeMoveable = true;
+        IsPinballSlopeMoveable = true;
+        IsBoulderSlopeMoveable = true;
         
         Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
         foreach (Vector3 direction in allTrigger)
