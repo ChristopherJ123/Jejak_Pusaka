@@ -1,11 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class GameLogic : MonoBehaviour
 {
     public static GameLogic Instance;
+    public AudioSource audioSource;
+    [SerializeField]
+    private Canvas deathScreenCanvas;
+    [SerializeField]
+    private TextMeshProUGUI deathScreenMessage;
+    
     public bool waitingForAllStartTickToFinish;
     public bool waitingForAllEndTickToFinish;
     public bool timeToCheckSchedule;
@@ -13,6 +23,26 @@ public class GameLogic : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        audioSource = GetComponent<AudioSource>();
+        deathScreenCanvas.gameObject.SetActive(false);
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    
+    public void ShowDeathScreen(string message)
+    {
+        deathScreenCanvas.gameObject.SetActive(true);
+        deathScreenMessage.text = message;
+    }
+    
+    public static void PlayAudioClipRandom(AudioClip[] audioClips)
+    {
+        if (audioClips.Length == 0) return;
+        var randomIndex = UnityEngine.Random.Range(0, audioClips.Length);
+        Instance.audioSource.PlayOneShot(audioClips[randomIndex]);
     }
 
     /// <summary>
@@ -156,7 +186,7 @@ public class GameLogic : MonoBehaviour
             var tickables = allTickables as ITickable[] ?? allTickables.ToArray();
             foreach (var tickable in tickables)
             {
-                if (tickable.IsNextTickScheduled)
+                if (tickable.IsNextTickMoveScheduled || tickable.IsNextTickDestroyScheduled)
                 {
                     // print("There is something scheduled");
                     StartTick(PlayerScript.Instance.ScheduledMoveDir);

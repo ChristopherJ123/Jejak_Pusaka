@@ -7,9 +7,10 @@ public interface ITickable
     /// The next predetermined random bit to use
     /// </summary>
     bool NextRandom { get; set; }
-    bool IsNextTickScheduled { get; set; }
+    bool IsNextTickDestroyScheduled { get; set; }
+    bool IsNextTickMoveScheduled { get; set; }
     /// <summary>
-    /// Complements IsNextTickScheduled if needed extra Tick after scheduling finishes.
+    /// Complements IsNextTickScheduled or IsNextTickDestroyed if needed extra Tick after scheduling finishes.
     /// </summary>
     bool DoExtraTickLoop { get; set; }
     bool IsStartTicking { get; set; }

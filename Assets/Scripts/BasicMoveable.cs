@@ -2,15 +2,21 @@
 
 public class BasicMoveable : BasicTickable, IMoveable
 {
+    private Animator _animator;
+    private static readonly int IsMoving = Animator.StringToHash("IsWalking");
+    private static readonly int X = Animator.StringToHash("X");
+    private static readonly int Y = Animator.StringToHash("Y");
     protected LayerMask LayerAllowMovement;
     protected LayerMask LayerStopsMovement;
     protected Transform MovePoint;
+    
+    [SerializeField]
+    protected AudioClip[] moveSounds;
     
     public Vector3 StartTickPosition { get; set; }
     public Vector3 EndTickPosition { get; set; }
     public Vector3 LastMoveDir { get; set; }
     public Vector3 ScheduledMoveDir { get; set; }
-    
     public bool IsIceMoveable { get; set; }
     public bool IsPinballMoveable { get; set; }
     public bool IsSlopeMoveable { get; set; }
@@ -28,7 +34,7 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual bool IsPlayerPushing(Vector3 moveDirection)
     {
-        return PlayerScript.Instance.IsNextTickScheduled &&
+        return PlayerScript.Instance.IsNextTickMoveScheduled &&
                PlayerScript.Instance.transform.position + moveDirection == transform.position;
     }
 
@@ -61,14 +67,14 @@ public class BasicMoveable : BasicTickable, IMoveable
     public void ScheduleMove(Vector3 moveDir, bool doExtraTickLoop = false)
     {
         IsTriggered = true;
-        IsNextTickScheduled = true;
+        IsNextTickMoveScheduled = true;
         ScheduledMoveDir = moveDir;
         if (doExtraTickLoop) DoExtraTickLoop = true;
     }
     
     public virtual void DoScheduledMove()
     {
-        if (IsNextTickScheduled)
+        if (IsNextTickMoveScheduled)
         {
             Move(ScheduledMoveDir);
             LastMoveDir = ScheduledMoveDir;
@@ -80,20 +86,33 @@ public class BasicMoveable : BasicTickable, IMoveable
     {
         // DateTime now = DateTime.Now;
         // print($"Moving {transform.name} Current Time: {now:HH:mm:ss.fff}");
+        if (_animator)
+        {
+            _animator.SetBool(IsMoving, true);
+            _animator.SetFloat(X, moveDir.x);
+            _animator.SetFloat(Y, moveDir.y);
+        }
         MovePoint.transform.position += moveDir;
         LastMoveDir = moveDir;
         IsStartTicking = true;
     }
+
+    public virtual void PlayMoveSound()
+    {
+        GameLogic.PlayAudioClipRandom(moveSounds);
+    }
+    
     public override void OnStartTick(Vector3 playerMoveDir)
     {
         base.OnStartTick(playerMoveDir);
         
         DoScheduledMove();
         
-        if (!IsNextTickScheduled && IsPlayerPushing(playerMoveDir))
+        if (IsPlayerPushing(playerMoveDir) && !IsNextTickMoveScheduled)
         {
             if (CanMoveOrRedirect(ref playerMoveDir))
             {
+                PlayMoveSound();
                 Move(playerMoveDir);
             }
         }
@@ -105,16 +124,16 @@ public class BasicMoveable : BasicTickable, IMoveable
         StartTickPosition = transform.position;
 
         // Turn off DoExtraTickLoop after IsNextTickScheduled is done (On the next tick)
-        if (!IsNextTickScheduled)
+        if (!IsNextTickMoveScheduled)
         {
             if (DoExtraTickLoop) DoExtraTickLoop = false;
         }
         // Finished doing scheduled move from OnStartTick
         // Called here so that other Tickable that depends on this variable won't get unexpected result from
         // OnStartTick()'s random ordering.
-        if (IsNextTickScheduled)
+        if (IsNextTickMoveScheduled)
         {
-            IsNextTickScheduled = false;
+            IsNextTickMoveScheduled = false;
         }
     }
 
@@ -137,6 +156,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     public override void Start()
     {
         base.Start();
+        _animator = GetComponent<Animator>();
         LayerAllowMovement = LayerMask.GetMask("Tile");
         LayerStopsMovement = LayerMask.GetMask("Collision");
         
@@ -158,6 +178,10 @@ public class BasicMoveable : BasicTickable, IMoveable
             transform.position = Vector3.MoveTowards(transform.position, MovePoint.position, 5f * Time.deltaTime);
             if (IsStationary())
             {
+                if (_animator)
+                {
+                    _animator.SetBool(IsMoving, false);
+                }
                 IsStartTicking = false;
             }     
         }

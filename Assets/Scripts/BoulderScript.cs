@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class BoulderScript : BasicMoveable
 {
+    [SerializeField]
+    private GameObject boulderFloatingPrefab;
+    private LoopingAudioPlayer _loopingAudioPlayer;
+    [SerializeField]
+    private AudioClip rollingSound;
+    [SerializeField]
+    private AudioClip[] boulderWaterSounds;
+    [SerializeField]
+    private AudioClip[] boulderLavaSounds;
+    
     public bool isTriggeredNear;
     private readonly Vector3[] _triggerFar =
     {
@@ -66,6 +76,21 @@ public class BoulderScript : BasicMoveable
         }
     }
     
+    public override void DoScheduledMove()
+    {
+        if (IsNextTickMoveScheduled)
+        {
+            _loopingAudioPlayer.PlayAudioClipLoop(rollingSound);
+            Move(ScheduledMoveDir);
+            LastMoveDir = ScheduledMoveDir;
+            ScheduledMoveDir = Vector3.zero;
+        }
+        else
+        {
+            _loopingAudioPlayer.StopLooping();
+        }
+    }
+    
     public override void OnStartTick(Vector3 playerMoveDir)
     {
         // print(transform.name + " start tick");
@@ -73,6 +98,7 @@ public class BoulderScript : BasicMoveable
 
         if (IsBoulderPushing())
         {
+            PlayMoveSound();
             var down = Vector3.down;
             if (CanMoveOrRedirect(ref down))
             {
@@ -85,6 +111,42 @@ public class BoulderScript : BasicMoveable
     {
         base.OnEndTick();
         
+        // Check if boulder is on water/lava
+        bool onWater = false;
+        bool onLava = false;
+        
+        Collider2D[] colliders = Physics2D.OverlapPointAll(transform.position);
+        foreach (var col in colliders)
+        {
+            if (col.CompareTag("Water"))
+            {
+                onWater = true;
+            }
+            else if (col.CompareTag("Lava"))
+            {
+                onLava = true;
+            }
+            else if (col.CompareTag("Floating Crate") || col.CompareTag("Floating Boulder"))
+            {
+                onWater = false;
+                onLava = false;
+                break;
+            }
+        }
+
+        if (onWater)
+        {
+            destroySounds = boulderWaterSounds;
+            IsNextTickDestroyScheduled = true;
+        }
+        else if (onLava)
+        {
+            destroySounds = boulderLavaSounds;
+            Instantiate(boulderFloatingPrefab, transform.position, Quaternion.identity);
+            IsNextTickDestroyScheduled = true;
+        }
+        
+        // Logic part
         if (LastMoveDir != Vector3.zero)
         {
             // print("am triggered");
@@ -137,7 +199,7 @@ public class BoulderScript : BasicMoveable
                 {
                     if (isTriggeredNear)
                     {
-					    // print("Calling farside trigger");
+					    // print(transform.name + "Calling farside trigger");
                         // fall
                         ScheduleFall();
                         return;
@@ -145,7 +207,7 @@ public class BoulderScript : BasicMoveable
                     farSideTriggeredCount++;
                     if (farSideTriggeredCount == 2)
                     {
-                        print("Calling farside trigger twice");
+                        // print(transform.name + " Calling farside trigger twice2");
                         // fall
                         isTriggeredNear = true;
                         ScheduleFall();
@@ -167,7 +229,7 @@ public class BoulderScript : BasicMoveable
                      beforeEntity != currentEntity)
                     )
                 {
-                    // print("Calling nearside trigger");
+                    print($"{transform.name} Calling nearside trigger");
                     isTriggeredNear = true;
                     break;
                 }
@@ -175,6 +237,13 @@ public class BoulderScript : BasicMoveable
         }
         else
         {
+            // Hardcoded way right now. If player is in the boulder, triggered near
+            // won't be reset, only reset if it's from a crate or other non-living
+            // entities.
+            if (_entityInArea.ContainsValue(PlayerScript.Instance.gameObject))
+            {
+                return;
+            }
             isTriggeredNear = false;
         }
         _entityInAreaBefore = new Dictionary<Vector3, GameObject>(_entityInArea);
@@ -183,6 +252,7 @@ public class BoulderScript : BasicMoveable
     public override void Start()
     {
         base.Start();
+        _loopingAudioPlayer = GetComponent<LoopingAudioPlayer>();
         IsIceMoveable = false;
         IsPinballMoveable = false;
         IsSlopeMoveable = true;

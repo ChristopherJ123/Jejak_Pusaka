@@ -4,15 +4,22 @@ using UnityEngine.Tilemaps;
 public class BasicTickable : MonoBehaviour, ITickable
 {
     protected SpriteRenderer SpriteRenderer;
+    [SerializeField]
+    protected AudioClip[] destroySounds;
     public bool IsTriggered { get; set; }
     public bool NextRandom { get; set; }
-    public bool IsNextTickScheduled { get; set; }
+    public bool IsNextTickDestroyScheduled { get; set; }
+    public bool IsNextTickMoveScheduled { get; set; }
     public bool DoExtraTickLoop { get; set; }
     public bool IsStartTicking { get; set; }
     public bool IsEndTicking { get; set; }
     public virtual void OnStartTick(Vector3 playerMoveDir)
     {
-        
+        if (IsNextTickDestroyScheduled)
+        {
+            GameLogic.PlayAudioClipRandom(destroySounds);
+            Destroy(gameObject);
+        }
     }
 
     public virtual void PostStartTick(Vector3 playerMoveDir)

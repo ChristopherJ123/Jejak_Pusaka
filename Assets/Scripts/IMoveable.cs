@@ -23,4 +23,5 @@ public interface IMoveable
     void ScheduleMove(Vector3 moveDir, bool doExtraTickLoop = false);
     void DoScheduledMove();
     void Move(Vector3 moveDir);
+    void PlayMoveSound();
 }

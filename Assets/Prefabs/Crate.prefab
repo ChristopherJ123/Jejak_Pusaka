@@ -110,7 +110,7 @@ SpriteRenderer:
   m_SortingLayerID: -1445231383
   m_SortingLayer: 3
   m_SortingOrder: 1
-  m_Sprite: {fileID: -554895652, guid: 35fe8c841ff158d449f4c8aa2b3d549f, type: 3}
+  m_Sprite: {fileID: 5126094029625639813, guid: 72f04339b9a20444da21804673e0dfa2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -179,3 +179,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1a5750d9cb1d58479ead86e89fd2bf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  destroySounds: []
+  moveSounds:
+  - {fileID: 8300000, guid: fa4901c668c16f34d93c5e5407569670, type: 3}
+  - {fileID: 8300000, guid: 44e7cee5b53224f4dbdfc019e23f539f, type: 3}
+  - {fileID: 8300000, guid: 78d7d78cf1a4ace468fe0c3460eda20d, type: 3}
+  - {fileID: 8300000, guid: 3d1ce6acba2eb024784886db314f4160, type: 3}
+  - {fileID: 8300000, guid: c03972b28df8f464b83bd446ea726291, type: 3}
+  crateFloatingPrefab: {fileID: 1027633719348444791, guid: 5b81287e50c0a9c4e802ad4db8f54d0e, type: 3}
+  crateWaterSounds:
+  - {fileID: 8300000, guid: 8754bff13f0958b44a02739938a2eedd, type: 3}
+  crateLavaSounds:
+  - {fileID: 8300000, guid: 7aefe4207a5ced14093fde7c19670035, type: 3}
+  - {fileID: 8300000, guid: 583446f37bd35cf409078ab3244cedb7, type: 3}

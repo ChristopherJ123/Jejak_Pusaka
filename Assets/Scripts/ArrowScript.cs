@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ArrowScript : BasicMoveable, IDirectional
 {
+    [SerializeField]
+    private AudioClip[] triggerSounds;
+    
     public bool isTriggeredNear;
     private readonly Vector3[] _triggerFar =
     {
@@ -126,6 +129,7 @@ public class ArrowScript : BasicMoveable, IDirectional
                 // print("Calling left the trigger");
                 // fall
                 isTriggeredNear = true;
+                GameLogic.PlayAudioClipRandom(triggerSounds);
                 ScheduleLaunch();
                 return;
             }
@@ -153,6 +157,7 @@ public class ArrowScript : BasicMoveable, IDirectional
                     {
 					    // print("Calling farside trigger");
                         // fall
+                        GameLogic.PlayAudioClipRandom(triggerSounds);
                         ScheduleLaunch();
                         return;
                     }
@@ -162,6 +167,7 @@ public class ArrowScript : BasicMoveable, IDirectional
                         print("Calling farside trigger twice");
                         // fall
                         isTriggeredNear = true;
+                        GameLogic.PlayAudioClipRandom(triggerSounds);
                         ScheduleLaunch();
                         return;
                     }

@@ -1,11 +1,18 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerScript : BasicMoveable
 {
     public static PlayerScript Instance;
     public float moveSpeed = 5f;
+    public bool isAlive = true;
+    
+    [SerializeField]
+    private AudioClip[] playerWaterSounds;
+    [SerializeField]
+    private AudioClip[] playerLavaSounds;
     
     private bool _postMoveAndTickEnd;
     private float _moveIntervalTimer;
@@ -17,6 +24,8 @@ public class PlayerScript : BasicMoveable
     /// <returns></returns>
     private bool PlayerMoveCondition(Vector3 playerMoveDir)
     {
+        if (!isAlive) return false;
+        
         var allMoveables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<IMoveable>();
 
@@ -50,7 +59,7 @@ public class PlayerScript : BasicMoveable
     /// <returns>Check succeed</returns>
     public override bool CanMoveOrRedirect(ref Vector3 moveDir)
     {
-        IsNextTickScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
+        IsNextTickMoveScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
         
         // First check if player hits a pinball and needs a moveDir redirect
         moveDir = PinballGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
@@ -66,15 +75,62 @@ public class PlayerScript : BasicMoveable
         {
             return true;
         }
-        IsNextTickScheduled = false;
+        IsNextTickMoveScheduled = false;
         return false;
     }
     
     public override void OnStartTick(Vector3 playerMoveDir)
     {
         // print("Player start tick");
+        if (IsNextTickDestroyScheduled)
+        {
+            GameLogic.PlayAudioClipRandom(destroySounds);
+            gameObject.SetActive(false);
+        }
+        
         DoScheduledMove();
         StartTickPosition = transform.position;
+    }
+
+    public override void OnEndTick()
+    {
+        base.OnEndTick();
+        
+        // Check if boulder is on water/lava
+        bool onWater = false;
+        bool onLava = false;
+        
+        Collider2D[] colliders = Physics2D.OverlapPointAll(transform.position);
+        foreach (var col in colliders)
+        {
+            if (col.CompareTag("Water"))
+            {
+                onWater = true;
+            }
+            else if (col.CompareTag("Lava"))
+            {
+                onLava = true;
+            }
+            else if (col.CompareTag("Floating Crate") || col.CompareTag("Floating Boulder"))
+            {
+                onWater = false;
+                onLava = false;
+                break;
+            }
+        }
+
+        if (onWater)
+        {
+            destroySounds = playerWaterSounds;
+            IsNextTickDestroyScheduled = true;
+            GameLogic.Instance.ShowDeathScreen("Player lupa kalau dia ga bisa berenang");
+        }
+        else if (onLava)
+        {
+            destroySounds = playerLavaSounds;
+            IsNextTickDestroyScheduled = true;
+            GameLogic.Instance.ShowDeathScreen("Player mencoba jalan di lava");
+        }
     }
 
     private void Awake()

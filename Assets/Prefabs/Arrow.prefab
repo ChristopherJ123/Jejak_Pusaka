@@ -179,4 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 943da11448ebefc4c8816da9f0edd5e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSounds:
+  - {fileID: 8300000, guid: ae0a053a269ef3f44bab5e2277327090, type: 3}
+  triggerSounds:
+  - {fileID: 8300000, guid: 6a2c89f91faa83246a5f76284ec122e4, type: 3}
   isTriggeredNear: 0
