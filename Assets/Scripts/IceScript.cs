@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class IceScript : BasicTickable
 {
+    public bool firstTimeStepOnIce = true;
+    
     public override void OnEndTick()
     {
         // print("Ice end tick");
@@ -30,6 +32,11 @@ public class IceScript : BasicTickable
                             if (moveable.CanMoveOrRedirect(ref moveableLastMoveDir))
                             {
                                 // print("Moving " + entity.name);
+                                if (firstTimeStepOnIce)
+                                {
+                                    GameLogic.PlayAudioClipRandom(triggerSounds);
+                                    firstTimeStepOnIce = false;
+                                }
                                 moveable.ScheduleMove(moveableLastMoveDir);
                             }
                         }
@@ -37,5 +44,11 @@ public class IceScript : BasicTickable
                 }
             }
         }
+    }
+
+    public override void OnReset()
+    {
+        base.OnReset();
+        firstTimeStepOnIce = true;
     }
 }

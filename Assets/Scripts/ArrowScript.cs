@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class ArrowScript : BasicMoveable, IDirectional
 {
-    [SerializeField]
-    private AudioClip[] triggerSounds;
-    
     public bool isTriggeredNear;
     private readonly Vector3[] _triggerFar =
     {
@@ -53,7 +50,8 @@ public class ArrowScript : BasicMoveable, IDirectional
                 // print(transform.name + " is detecting an entity in trigger near");
 
                 // boulder di atase
-                if (entity.CompareTag("Arrow") && entity.transform.position - trigger == transform.position)
+                if (entity.CompareTag("Arrow") && transform.position + trigger == entity.transform.position
+                    && Direction == trigger)
                 {
                     // print(transform.name + " is detecting an arrow pushing");
 
@@ -74,11 +72,21 @@ public class ArrowScript : BasicMoveable, IDirectional
 
     void ScheduleLaunch()
     {
+        // print($"{transform.name} I AM CALLED");
         var moveDir = Direction;
         if (CanMoveOrRedirect(ref moveDir))
         {
             isTriggeredNear = true;
             ScheduleMove(moveDir, true);
+        }
+    }
+
+    protected override void OnHit(GameObject hitObject)
+    {
+        base.OnHit(hitObject);
+        if (hitObject.CompareTag("Player"))
+        {
+            GameLogic.Instance.GameOver("Player ketusuk panah");
         }
     }
 
@@ -89,7 +97,7 @@ public class ArrowScript : BasicMoveable, IDirectional
         
         if (IsArrowPushing())
         {
-            // print("Is arrow pushing");
+            // print($"{transform} Is arrow pushing");
             var dir = Direction;
             if (CanMoveOrRedirect(ref dir))
             {
@@ -106,6 +114,7 @@ public class ArrowScript : BasicMoveable, IDirectional
         if (LastMoveDir != Vector3.zero)
         {
             // Was moved and that means is triggered
+            // print($"{transform.name} LastMoveDir is {LastMoveDir}");
             isTriggeredNear = true;
             ScheduleLaunch();
             return;
@@ -123,13 +132,23 @@ public class ArrowScript : BasicMoveable, IDirectional
         
         if (GameLogic.AreDictionariesDifferent(_entityInArea, _entityInAreaBefore))
         {
+            // // Debug
+            // foreach (KeyValuePair<Vector3, GameObject> keyValuePair in _entityInAreaBefore)
+            // {
+            //     print("Entity in area before: " + keyValuePair.Value.name + " at " + keyValuePair.Key);
+            // }
+            //
+            // foreach (KeyValuePair<Vector3, GameObject> keyValuePair in _entityInArea)
+            // {
+            //     print("Entity in area now: " + keyValuePair.Value.name + " at " + keyValuePair.Key);
+            // }
+            
             // Left the trigger
             if (_entityInArea.Count < _entityInAreaBefore.Count)
             {
-                // print("Calling left the trigger");
+                // print("Calling left trigger");
                 // fall
                 isTriggeredNear = true;
-                GameLogic.PlayAudioClipRandom(triggerSounds);
                 ScheduleLaunch();
                 return;
             }
@@ -155,19 +174,17 @@ public class ArrowScript : BasicMoveable, IDirectional
                 {
                     if (isTriggeredNear)
                     {
-					    // print("Calling farside trigger");
+					    // print($"{transform.name} Calling farside trigger");
                         // fall
-                        GameLogic.PlayAudioClipRandom(triggerSounds);
                         ScheduleLaunch();
                         return;
                     }
                     farSideTriggeredCount++;
                     if (farSideTriggeredCount == 2)
                     {
-                        print("Calling farside trigger twice");
+                        // print("Calling farside trigger twice2");
                         // fall
                         isTriggeredNear = true;
-                        GameLogic.PlayAudioClipRandom(triggerSounds);
                         ScheduleLaunch();
                         return;
                     }
@@ -195,6 +212,13 @@ public class ArrowScript : BasicMoveable, IDirectional
         }
         else
         {
+            // Hardcoded way right now. If player is in the boulder, triggered near
+            // won't be reset, only reset if it's from a crate or other non-living
+            // entities.
+            if (_entityInArea.ContainsValue(PlayerScript.Instance.gameObject))
+            {
+                return;
+            }
             isTriggeredNear = false;
         }
         _entityInAreaBefore = new Dictionary<Vector3, GameObject>(_entityInArea);
@@ -209,5 +233,17 @@ public class ArrowScript : BasicMoveable, IDirectional
         IsPinballSlopeMoveable = true;
         IsBoulderSlopeMoveable = true;
         SetDirection(transform.eulerAngles.z);
+        
+        Vector3[] allTrigger = _triggerFar.Concat(_triggerNear).ToArray();
+        foreach (Vector3 direction in allTrigger)
+        {
+            Collider2D entity = Physics2D.OverlapPoint(transform.position + direction, LayerStopsMovement);
+            if (entity)
+            {
+                _entityInArea.Add(direction, entity.gameObject);
+                _entityInAreaBefore.Add(direction, entity.gameObject);
+            }
+        }
+        print($"{transform.name} LastMoveDir is {LastMoveDir}");
     }
 }

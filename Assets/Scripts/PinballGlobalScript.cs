@@ -10,6 +10,7 @@ public class PinballGlobalScript : MonoBehaviour
         Vector3.left,
         Vector3.right,
     };
+    private static AudioClip[] _pinballTriggerSounds;
 
     /// <summary>
     /// Redirect a Moveable's move dir if hit a pinball
@@ -37,10 +38,12 @@ public class PinballGlobalScript : MonoBehaviour
                     {
                         return initialMoveDir;
                     }
+                    GameLogic.PlayAudioClipRandom(_pinballTriggerSounds);
                     return trigger;
                 }
                 if (entity.transform.position + initialMoveDir == pinball.transform.position)
                 {
+                    GameLogic.PlayAudioClipRandom(_pinballTriggerSounds);
                     return -initialMoveDir;
                 }
             }
@@ -51,5 +54,9 @@ public class PinballGlobalScript : MonoBehaviour
     private void Start()
     {
         _allPinballs = GameObject.FindGameObjectsWithTag("Pinball");
+        if (_allPinballs.Length > 0)
+        {
+            _pinballTriggerSounds = _allPinballs[0].GetComponent<PinballScript>().triggerSounds;
+        }
     }
 }

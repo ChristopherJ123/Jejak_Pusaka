@@ -1,28 +1,33 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraScript : MonoBehaviour
 {
     public float scrollSpeed = 10f;
     public float zoomScrollSpeed = 10f;
-    public float edgeThickness = 20f; // Thickness in pixels from screen edge
+    private const float _edgeThickness = 150f; // Thickness in pixels from screen edge
     public float smoothTime = 0.2f;
     public float zoomSmoothTime = 0.2f;
     public bool isPlayerFollowing;
     public float minZoom = 3f;
-    public float maxZoom = 10f;
+    public float maxZoom = 15f;
     
     private Camera _cam;
     private Vector3 _velocity = Vector3.zero;
     private Vector3 _targetPosition = Vector3.zero;
     private float _zoomVelocity;
     private float _targetZoomSize;
+    private Image _freeCamIndicator;
     
     void Start()
     {
         _cam = Camera.main;
+        maxZoom = 15f;
         if (!_cam) return;
         _targetPosition = _cam.transform.position;
         _targetZoomSize = _cam.orthographicSize;
+        _freeCamIndicator = GameObject.FindGameObjectWithTag("FreeCamIndicator").GetComponent<Image>();
+        _freeCamIndicator.gameObject.SetActive(!isPlayerFollowing);
     }
 
     void Update()
@@ -33,19 +38,19 @@ public class CameraScript : MonoBehaviour
             Vector3 pos = transform.position;
             Vector3 mousePos = Input.mousePosition;
 
-            if (mousePos.x >= Screen.width - edgeThickness)
+            if (mousePos.x >= Screen.width - _edgeThickness)
             {
                 pos.x += scrollSpeed * Time.deltaTime;
             }
-            else if (mousePos.x <= edgeThickness)
+            else if (mousePos.x <= _edgeThickness)
             {
                 pos.x -= scrollSpeed * Time.deltaTime;
             }
 
-            if (mousePos.y >= Screen.height - edgeThickness)
+            if (mousePos.y >= Screen.height - _edgeThickness)
             {
                 pos.y += scrollSpeed * Time.deltaTime;
-            } else if (mousePos.y <= edgeThickness)
+            } else if (mousePos.y <= _edgeThickness)
             {
                 pos.y -= scrollSpeed * Time.deltaTime;
             }
@@ -68,6 +73,7 @@ public class CameraScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             isPlayerFollowing = !isPlayerFollowing;
+            _freeCamIndicator.gameObject.SetActive(!isPlayerFollowing);
         }
     }
 }

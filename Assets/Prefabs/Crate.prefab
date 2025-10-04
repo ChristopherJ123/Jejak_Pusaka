@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1a5750d9cb1d58479ead86e89fd2bf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerSounds: []
   destroySounds: []
   moveSounds:
   - {fileID: 8300000, guid: fa4901c668c16f34d93c5e5407569670, type: 3}
@@ -186,7 +187,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 78d7d78cf1a4ace468fe0c3460eda20d, type: 3}
   - {fileID: 8300000, guid: 3d1ce6acba2eb024784886db314f4160, type: 3}
   - {fileID: 8300000, guid: c03972b28df8f464b83bd446ea726291, type: 3}
+  movingSound: {fileID: 0}
+  hitSounds: []
   crateFloatingPrefab: {fileID: 1027633719348444791, guid: 5b81287e50c0a9c4e802ad4db8f54d0e, type: 3}
+  crateBurningAnimationPrefab: {fileID: 391831590492509251, guid: 09c45e58423bee04db37dd47c2308fe9, type: 3}
   crateWaterSounds:
   - {fileID: 8300000, guid: 8754bff13f0958b44a02739938a2eedd, type: 3}
   crateLavaSounds:

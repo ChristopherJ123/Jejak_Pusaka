@@ -6,13 +6,12 @@ public class BoulderScript : BasicMoveable
 {
     [SerializeField]
     private GameObject boulderFloatingPrefab;
-    private LoopingAudioPlayer _loopingAudioPlayer;
-    [SerializeField]
-    private AudioClip rollingSound;
     [SerializeField]
     private AudioClip[] boulderWaterSounds;
     [SerializeField]
     private AudioClip[] boulderLavaSounds;
+    [SerializeField]
+    private AudioClip[] boulderSplatSounds;
     
     public bool isTriggeredNear;
     private readonly Vector3[] _triggerFar =
@@ -61,7 +60,7 @@ public class BoulderScript : BasicMoveable
     {
         // First
         var canMove = base.CanMoveOrRedirect(ref moveDir);
-
+        
         // Last. If there's any UP moving then return false. Boulder cannot go up.
         return !Mathf.Approximately(moveDir.y, 1) && canMove;
     }
@@ -75,33 +74,43 @@ public class BoulderScript : BasicMoveable
             ScheduleMove(fallDirection, true);
         }
     }
-    
-    public override void DoScheduledMove()
+
+    protected override void OnHit(GameObject hitObject)
     {
-        if (IsNextTickMoveScheduled)
+        if (hitObject && hitObject.CompareTag("Player"))
         {
-            _loopingAudioPlayer.PlayAudioClipLoop(rollingSound);
-            Move(ScheduledMoveDir);
-            LastMoveDir = ScheduledMoveDir;
-            ScheduledMoveDir = Vector3.zero;
+            // If diagonal movement then check all collisions (2 collisions total before splatting player)
+            if (Mathf.Approximately(Mathf.Abs(LastMoveDir.x), 1f) && Mathf.Approximately(Mathf.Abs(LastMoveDir.y), 1f))
+            {
+                if (!GameLogic.IsSpaceAvailable(transform.position + new Vector3(LastMoveDir.x, 0, 0)))
+                {
+                    base.OnHit(hitObject);
+                    return;
+                }
+            }
+            hitObject.transform.localScale = new Vector3(hitObject.transform.localScale.x, hitObject.transform.localScale.y / 4, hitObject.transform.localScale.z);
+            GameLogic.PlayAudioClipRandom(boulderSplatSounds);
+            GameLogic.Instance.GameOver("Player terlindas oleh boulder");
+            Move(LastMoveDir);
         }
         else
         {
-            _loopingAudioPlayer.StopLooping();
+            base.OnHit(hitObject);
         }
     }
-    
+
     public override void OnStartTick(Vector3 playerMoveDir)
     {
         // print(transform.name + " start tick");
         base.OnStartTick(playerMoveDir);
 
-        if (IsBoulderPushing())
+        if (IsBoulderPushing() && GameLogic.IsSpaceAvailable(transform.position + Vector3.down))
         {
-            PlayMoveSound();
             var down = Vector3.down;
             if (CanMoveOrRedirect(ref down))
             {
+                // print($"{transform.name} is boulder pushing");
+                PlayMoveSound();
                 Move(down);
             }
         }
@@ -252,7 +261,6 @@ public class BoulderScript : BasicMoveable
     public override void Start()
     {
         base.Start();
-        _loopingAudioPlayer = GetComponent<LoopingAudioPlayer>();
         IsIceMoveable = false;
         IsPinballMoveable = false;
         IsSlopeMoveable = true;

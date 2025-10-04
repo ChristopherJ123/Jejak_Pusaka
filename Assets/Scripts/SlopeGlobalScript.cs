@@ -9,6 +9,8 @@ public class SlopeGlobalScript : MonoBehaviour
     private static SlopeScript[] _allSlopes;
     private static BoulderScript[] _allBoulders;
     private static PinballScript[] _allPinballs;
+    
+    private static AudioClip[] _arrowTriggerSounds;
 
     public static Vector3 RedirectMoveFromSlopeIfAny(GameObject entity, Vector3 initialMoveDir)
     {
@@ -32,20 +34,22 @@ public class SlopeGlobalScript : MonoBehaviour
                     {
                         // Rotate 90 clockwise
                         var newDirection = new Vector3(initialMoveDir.y, -initialMoveDir.x);
-                        if (Physics2D.OverlapPoint(entity.transform.position + newDirection, LayerMask.GetMask("Collision")))
+                        if (!GameLogic.IsSpaceAvailable(entity.transform.position + newDirection))
                         {
                             return initialMoveDir;
                         }
+                        if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                         return newDirection + initialMoveDir;
                     }
                     if (initialMoveDir == Vector3.up || initialMoveDir == Vector3.down)
                     {
                         // Rotate 90 CCW
                         var newDirection = new Vector3(-initialMoveDir.y, initialMoveDir.x);
-                        if (Physics2D.OverlapPoint(entity.transform.position + newDirection, LayerMask.GetMask("Collision")))
+                        if (!GameLogic.IsSpaceAvailable(entity.transform.position + newDirection))
                         {
                             return initialMoveDir;
                         }
+                        if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                         return newDirection + initialMoveDir;
                     }
                 } else if (slope.slopeDirection == Vector2.left)
@@ -54,20 +58,22 @@ public class SlopeGlobalScript : MonoBehaviour
                     {
                         // Rotate 90 CCW
                         var newDirection = new Vector3(-initialMoveDir.y, initialMoveDir.x);
-                        if (Physics2D.OverlapPoint(entity.transform.position + newDirection, LayerMask.GetMask("Collision")))
+                        if (!GameLogic.IsSpaceAvailable(entity.transform.position + newDirection))
                         {
                             return initialMoveDir;
                         }
+                        if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                         return newDirection + initialMoveDir;
                     }
                     if (initialMoveDir == Vector3.up || initialMoveDir == Vector3.down)
                     {
                         // Rotate 90 clockwise
                         var newDirection = new Vector3(initialMoveDir.y, -initialMoveDir.x);
-                        if (Physics2D.OverlapPoint(entity.transform.position + newDirection, LayerMask.GetMask("Collision")))
+                        if (!GameLogic.IsSpaceAvailable(entity.transform.position + newDirection))
                         {
                             return initialMoveDir;
                         }
+                        if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                         return newDirection + initialMoveDir;
                     }
                 }
@@ -112,6 +118,7 @@ public class SlopeGlobalScript : MonoBehaviour
                 }
                 else if (initialMoveDir == Vector3.right || initialMoveDir == Vector3.left)
                 {
+                    if (entity.CompareTag("Boulder")) return initialMoveDir;
                     if (tickable.NextRandom)
                     {
                         perp1 = Vector3.down;
@@ -131,16 +138,18 @@ public class SlopeGlobalScript : MonoBehaviour
                 tickable.NextRandom = !tickable.NextRandom;
 
                 // First perpendicular check (e.g. left or up)
-                if (Physics2D.OverlapPoint(entity.transform.position + perp1, _layerAllowsMovement) &&
-                    Physics2D.OverlapPoint(entity.transform.position + initialMoveDir + perp1, _layerAllowsMovement))
+                if (GameLogic.IsSpaceAvailable(entity.transform.position + perp1) &&
+                    GameLogic.IsSpaceAvailable(entity.transform.position + initialMoveDir + perp1))
                 {
+                    if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                     return initialMoveDir + perp1;
                 }
 
                 // Second perpendicular check (e.g. right or down)
-                if (Physics2D.OverlapPoint(entity.transform.position + perp2, _layerAllowsMovement) &&
-                    Physics2D.OverlapPoint(entity.transform.position + initialMoveDir + perp2, _layerAllowsMovement))
+                if (GameLogic.IsSpaceAvailable(entity.transform.position + perp2) &&
+                    GameLogic.IsSpaceAvailable(entity.transform.position + initialMoveDir + perp2))
                 {
+                    if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                     return initialMoveDir + perp2;
                 }
 
@@ -207,18 +216,20 @@ public class SlopeGlobalScript : MonoBehaviour
                 tickable.NextRandom = !tickable.NextRandom;
 
                 // First perpendicular check (e.g. left or up)
-                if (!Physics2D.OverlapPoint(entity.transform.position + perp1, _layerBlocksMovement) &&
-                    !Physics2D.OverlapPoint(entity.transform.position + initialMoveDir + perp1, _layerBlocksMovement))
+                if (GameLogic.IsSpaceAvailable(entity.transform.position + perp1) &&
+                    GameLogic.IsSpaceAvailable(entity.transform.position + initialMoveDir + perp1))
                 {
-                    print("returning A");
+                    // print("returning A");
+                    if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                     return initialMoveDir + perp1;
                 }
 
                 // Second perpendicular check (e.g. right or down)
-                if (!Physics2D.OverlapPoint(entity.transform.position + perp2, _layerBlocksMovement) &&
-                    !Physics2D.OverlapPoint(entity.transform.position + initialMoveDir + perp2, _layerBlocksMovement))
+                if (GameLogic.IsSpaceAvailable(entity.transform.position + perp2) &&
+                    GameLogic.IsSpaceAvailable(entity.transform.position + initialMoveDir + perp2))
                 {
-                    print("returning B");
+                    // print("returning B");
+                    if (entity.CompareTag("Arrow")) GameLogic.PlayAudioClipRandom(_arrowTriggerSounds);
                     return initialMoveDir + perp2;
                 }
 
@@ -244,5 +255,10 @@ public class SlopeGlobalScript : MonoBehaviour
         _allPinballs = GameObject.FindGameObjectsWithTag("Pinball").Select(go => go.GetComponent<PinballScript>())
             .Where(component => component != null)
             .ToArray();
+        var allArrows = FindObjectsByType<ArrowScript>(FindObjectsSortMode.None);
+        if (allArrows.Length > 0)
+        {
+            _arrowTriggerSounds = allArrows[0].moveSounds;
+        }
     }
 }

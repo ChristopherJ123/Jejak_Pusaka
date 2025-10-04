@@ -1,0 +1,806 @@
+fileFormatVersion: 2
+guid: 000b6c3817675a14abfbf57f82e4a3aa
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1990343414193522679
+    second: JP Box-Sheet_0
+  - first:
+      213: -6269202928470603989
+    second: JP Box-Sheet_1
+  - first:
+      213: -4551502801654359470
+    second: JP Box-Sheet_2
+  - first:
+      213: 3734283728652322309
+    second: JP Box-Sheet_3
+  - first:
+      213: 2507755621060703484
+    second: JP Box-Sheet_4
+  - first:
+      213: 645589989196414501
+    second: JP Box-Sheet_5
+  - first:
+      213: -7932883785224313299
+    second: JP Box-Sheet_6
+  - first:
+      213: -2294037039422827866
+    second: JP Box-Sheet_7
+  - first:
+      213: -923542650802682308
+    second: JP Box-Sheet_8
+  - first:
+      213: 4726453971413720176
+    second: JP Box-Sheet_9
+  - first:
+      213: -6787147846253873222
+    second: JP Box-Sheet_10
+  - first:
+      213: 613490413357329284
+    second: JP Box-Sheet_11
+  - first:
+      213: 8498415732294678421
+    second: JP Box-Sheet_12
+  - first:
+      213: -2298413128410966001
+    second: JP Box-Sheet_13
+  - first:
+      213: -4452845766480322108
+    second: JP Box-Sheet_14
+  - first:
+      213: -7588813597834641677
+    second: JP Box-Sheet_15
+  - first:
+      213: -8338153645836388027
+    second: JP Box-Sheet_16
+  - first:
+      213: -8224137315902552918
+    second: JP Box-Sheet_17
+  - first:
+      213: 6192285571242910111
+    second: JP Box-Sheet_18
+  - first:
+      213: -1080447169149720335
+    second: JP Box-Sheet_19
+  - first:
+      213: 9019122555946152866
+    second: JP Box-Sheet_20
+  - first:
+      213: 8966416555728422819
+    second: JP Box-Sheet_21
+  - first:
+      213: 4120769908231857838
+    second: JP Box-Sheet_22
+  - first:
+      213: 3529369452649106428
+    second: JP Box-Sheet_23
+  - first:
+      213: 439370798675067774
+    second: JP Box-Sheet_24
+  - first:
+      213: 7193006197121591681
+    second: JP Box-Sheet_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: JP Box-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 908f4f7c531e064e0800000000000000
+      internalID: -1990343414193522679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 63
+        width: 34
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b27cba7f6215ff8a0800000000000000
+      internalID: -6269202928470603989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25a52391150d5d0c0800000000000000
+      internalID: -4551502801654359470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 97
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 506c7d02447d2d330800000000000000
+      internalID: 3734283728652322309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 63
+        width: 34
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf4ffc063765dc220800000000000000
+      internalID: 2507755621060703484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52eb998bca895f800800000000000000
+      internalID: 645589989196414501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d26af314a3cb8e190800000000000000
+      internalID: -7932883785224313299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 63
+        width: 34
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a21d9b8771f920e0800000000000000
+      internalID: -2294037039422827866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 97
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c36cbfb2adaee23f0800000000000000
+      internalID: -923542650802682308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 63
+        width: 34
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07c595d58dcb79140800000000000000
+      internalID: 4726453971413720176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab7faf16ef43fc1a0800000000000000
+      internalID: -6787147846253873222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 63
+        width: 34
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48b6541d74e838800800000000000000
+      internalID: 613490413357329284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 97
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 597f30df41070f570800000000000000
+      internalID: 8498415732294678421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 63
+        width: 34
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0858fdef656a10e0800000000000000
+      internalID: -2298413128410966001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c1a6591e505432c0800000000000000
+      internalID: -4452845766480322108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 63
+        width: 34
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fe79627d3e1fa690800000000000000
+      internalID: -7588813597834641677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 97
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5493b41cf6de84c80800000000000000
+      internalID: -8338153645836388027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 63
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa4089d3faefddd80800000000000000
+      internalID: -8224137315902552918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f91e5bd3bea6fe550800000000000000
+      internalID: 6192285571242910111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 63
+        width: 34
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f8214c260b7101f0800000000000000
+      internalID: -1080447169149720335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 97
+        width: 34
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a332e4ed2c5a2d70800000000000000
+      internalID: 9019122555946152866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 63
+        width: 34
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a7cf50f95c1f6c70800000000000000
+      internalID: 8966416555728422819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 96
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea66745166aef2930800000000000000
+      internalID: 4120769908231857838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 831
+        y: 63
+        width: 34
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfbc34a51d6daf030800000000000000
+      internalID: 3529369452649106428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 97
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7305bbd965f81600800000000000000
+      internalID: 439370798675067774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JP Box-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 895
+        y: 63
+        width: 34
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 189ad9ea601b2d360800000000000000
+      internalID: 7193006197121591681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      JP Box-Sheet_0: -1990343414193522679
+      JP Box-Sheet_1: -6269202928470603989
+      JP Box-Sheet_10: -6787147846253873222
+      JP Box-Sheet_11: 613490413357329284
+      JP Box-Sheet_12: 8498415732294678421
+      JP Box-Sheet_13: -2298413128410966001
+      JP Box-Sheet_14: -4452845766480322108
+      JP Box-Sheet_15: -7588813597834641677
+      JP Box-Sheet_16: -8338153645836388027
+      JP Box-Sheet_17: -8224137315902552918
+      JP Box-Sheet_18: 6192285571242910111
+      JP Box-Sheet_19: -1080447169149720335
+      JP Box-Sheet_2: -4551502801654359470
+      JP Box-Sheet_20: 9019122555946152866
+      JP Box-Sheet_21: 8966416555728422819
+      JP Box-Sheet_22: 4120769908231857838
+      JP Box-Sheet_23: 3529369452649106428
+      JP Box-Sheet_24: 439370798675067774
+      JP Box-Sheet_25: 7193006197121591681
+      JP Box-Sheet_3: 3734283728652322309
+      JP Box-Sheet_4: 2507755621060703484
+      JP Box-Sheet_5: 645589989196414501
+      JP Box-Sheet_6: -7932883785224313299
+      JP Box-Sheet_7: -2294037039422827866
+      JP Box-Sheet_8: -923542650802682308
+      JP Box-Sheet_9: 4726453971413720176
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

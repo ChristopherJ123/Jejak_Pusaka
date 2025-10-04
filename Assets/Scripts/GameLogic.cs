@@ -10,21 +10,42 @@ using UnityEngine.UI;
 public class GameLogic : MonoBehaviour
 {
     public static GameLogic Instance;
+    [HideInInspector]
     public AudioSource audioSource;
-    [SerializeField]
-    private Canvas deathScreenCanvas;
-    [SerializeField]
-    private TextMeshProUGUI deathScreenMessage;
+
+    public string levelName = "";
+    public float speed = 6;
+    public bool shouldSaveScore = true;
     
+    public int Score { get; private set; }
+    private int _numberOfTreasures;
+
+    [HideInInspector]
+    public bool isCurrentlyTicking;
+    [HideInInspector]
     public bool waitingForAllStartTickToFinish;
+    [HideInInspector]
     public bool waitingForAllEndTickToFinish;
+    [HideInInspector]
     public bool timeToCheckSchedule;
+    
+    public static LayerMask LayerAllowsMovement;
+    public static LayerMask LayerBlocksMovement;
     
     void Awake()
     {
         Instance = this;
+        LayerAllowsMovement = LayerMask.GetMask("Tile");
+        LayerBlocksMovement = LayerMask.GetMask("Collision");
         audioSource = GetComponent<AudioSource>();
-        deathScreenCanvas.gameObject.SetActive(false);
+        
+        _numberOfTreasures = FindObjectsByType<TreasureScript>(FindObjectsSortMode.None).Length;
+    }
+
+    private void Start()
+    {
+        GameLogicUI.Instance.ShowLevelName(levelName);
+        GameLogicUI.Instance.ShowScore(Score, GlobalGameManager.Instance.scorePerTreasure*_numberOfTreasures);
     }
 
     public void RestartLevel()
@@ -32,10 +53,16 @@ public class GameLogic : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     
-    public void ShowDeathScreen(string message)
+    public void GameOver(string message)
     {
-        deathScreenCanvas.gameObject.SetActive(true);
-        deathScreenMessage.text = message;
+        PlayerScript.Instance.isAlive = false;
+        GameLogicUI.Instance.ShowDeathScreen(message);
+    }
+
+    public void AddScore()
+    {
+        Score += GlobalGameManager.Instance.scorePerTreasure;;
+        GameLogicUI.Instance.ShowScore(Score, GlobalGameManager.Instance.scorePerTreasure*_numberOfTreasures);
     }
     
     public static void PlayAudioClipRandom(AudioClip[] audioClips)
@@ -60,6 +87,11 @@ public class GameLogic : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public static bool IsSpaceAvailable(Vector3 coordinates)
+    {
+        return Physics2D.OverlapPoint(coordinates, LayerAllowsMovement) && !Physics2D.OverlapPoint(coordinates, LayerBlocksMovement);
     }
     
     /// <summary>
@@ -94,6 +126,7 @@ public class GameLogic : MonoBehaviour
     public void StartTick(Vector3 playerMoveDir, params Type[] excludeTypes)
     {
         // print("start tick");
+        isCurrentlyTicking = true;
         waitingForAllStartTickToFinish = true;
         var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ITickable>();
@@ -206,6 +239,18 @@ public class GameLogic : MonoBehaviour
                 }
             }
             timeToCheckSchedule = false;
+        }
+
+        // Reset all tickables after ticking is done.
+        if (isCurrentlyTicking)
+        {
+            var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+                .OfType<ITickable>();
+            foreach (var tickable in allTickables)
+            {
+                tickable.OnReset();
+            }
+            isCurrentlyTicking = false;
         }
     }
 }

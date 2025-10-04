@@ -6,6 +6,8 @@ public class CrateScript : BasicMoveable
     [SerializeField]
     private GameObject crateFloatingPrefab;
     [SerializeField]
+    private GameObject crateBurningAnimationPrefab;
+    [SerializeField]
     private AudioClip[] crateWaterSounds;
     [SerializeField]
     private AudioClip[] crateLavaSounds;
@@ -29,7 +31,7 @@ public class CrateScript : BasicMoveable
             {
                 onLava = true;
             }
-            else if (col.CompareTag("Floating Crate") || col.CompareTag("Floating Boulder"))
+            else if (col.CompareTag("Floating Crate") || col.CompareTag("Floating Boulder") || col.CompareTag("Ice"))
             {
                 onWater = false;
                 onLava = false;
@@ -45,6 +47,7 @@ public class CrateScript : BasicMoveable
         } else if (onLava)
         {
             destroySounds = crateLavaSounds;
+            Instantiate(crateBurningAnimationPrefab, transform.position, Quaternion.identity);
             IsNextTickDestroyScheduled = true;
         }
     }

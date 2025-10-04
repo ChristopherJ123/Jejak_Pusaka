@@ -1,19 +1,18 @@
 using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerScript : BasicMoveable
 {
     public static PlayerScript Instance;
-    public float moveSpeed = 5f;
-    public bool isAlive = true;
     
     [SerializeField]
     private AudioClip[] playerWaterSounds;
     [SerializeField]
     private AudioClip[] playerLavaSounds;
+    public AudioClip[] playerFallSounds;
     
+    public bool isAlive = true;
     private bool _postMoveAndTickEnd;
     private float _moveIntervalTimer;
     
@@ -70,12 +69,19 @@ public class PlayerScript : BasicMoveable
         // Thirdly check if player can move entities, more detailed see method docs
         var result = PlayerMoveCondition(moveDir);
         
-        // Lastly checks if it is out of bounds (not touching any Tile Layer)
+        // Fourth checks if it is out of bounds (not touching any Tile Layer)
         if (result && Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
+            // Lastly Check if player is not colliding with an IMoveable or treasure
+            var colide = Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement);
+            if (colide && !colide.TryGetComponent<IMoveable>(out _) && !colide.TryGetComponent<TreasureScript>(out _))
+            {
+                return false;
+            }
             return true;
         }
         IsNextTickMoveScheduled = false;
+        
         return false;
     }
     
@@ -111,7 +117,7 @@ public class PlayerScript : BasicMoveable
             {
                 onLava = true;
             }
-            else if (col.CompareTag("Floating Crate") || col.CompareTag("Floating Boulder"))
+            else if (col.CompareTag("Floating Crate") || col.CompareTag("Floating Boulder") || col.CompareTag("Ice"))
             {
                 onWater = false;
                 onLava = false;
@@ -123,14 +129,20 @@ public class PlayerScript : BasicMoveable
         {
             destroySounds = playerWaterSounds;
             IsNextTickDestroyScheduled = true;
-            GameLogic.Instance.ShowDeathScreen("Player lupa kalau dia ga bisa berenang");
+            GameLogic.Instance.GameOver("Player lupa kalau dia ga bisa berenang");
         }
         else if (onLava)
         {
             destroySounds = playerLavaSounds;
             IsNextTickDestroyScheduled = true;
-            GameLogic.Instance.ShowDeathScreen("Player mencoba jalan di lava");
+            GameLogic.Instance.GameOver("Player mencoba jalan di lava");
         }
+    }
+
+    public override void PostEndTick()
+    {
+        base.PostEndTick();
+        SpriteRenderer.sortingOrder += 2;
     }
 
     private void Awake()
@@ -154,7 +166,7 @@ public class PlayerScript : BasicMoveable
                 // Start end tick after moving.
                 // GameLogic.Instance.EndTick();
                 _postMoveAndTickEnd = false;
-                _moveIntervalTimer = 0.1f;
+                _moveIntervalTimer = 0.05f;
             }
 
             var moveDirectionInput = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));

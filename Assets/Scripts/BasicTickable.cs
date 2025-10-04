@@ -5,6 +5,8 @@ public class BasicTickable : MonoBehaviour, ITickable
 {
     protected SpriteRenderer SpriteRenderer;
     [SerializeField]
+    public AudioClip[] triggerSounds;
+    [SerializeField]
     protected AudioClip[] destroySounds;
     public bool IsTriggered { get; set; }
     public bool NextRandom { get; set; }
@@ -37,16 +39,21 @@ public class BasicTickable : MonoBehaviour, ITickable
         
     }
 
+    public virtual void OnReset()
+    {
+        
+    }
+
     public virtual void Start()
     {
         if (gameObject.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
         {
             SpriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-            spriteRenderer.sortingOrder = -(int)(transform.position.y * 100) + 10;
+            spriteRenderer.sortingOrder = -(int)(transform.position.y * 10);
         }
-        else if (gameObject.TryGetComponent<TilemapRenderer>(out var tilemapRenderer))
-        {
-            tilemapRenderer.sortingOrder = -10000;
-        }
+        // else if (gameObject.TryGetComponent<TilemapRenderer>(out var tilemapRenderer))
+        // {
+        //     tilemapRenderer.sortingOrder = -10000;
+        // }
     }
 }

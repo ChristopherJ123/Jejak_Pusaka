@@ -34,4 +34,5 @@ public interface ITickable
     void PostStartTick(Vector3 playerMoveDir);
     void OnEndTick();
     void PostEndTick();
+    void OnReset();
 }

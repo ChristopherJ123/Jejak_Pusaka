@@ -147,3 +147,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7113ea115c44a394f193c24da12b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerSounds:
+  - {fileID: 8300000, guid: e77a2e3718eabf64f834b714b3cedc14, type: 3}
+  - {fileID: 8300000, guid: 6ffcefdc28d2a2b4baa8eb8d4a8d6389, type: 3}
+  - {fileID: 8300000, guid: 332f682e80e7e864f90314cef4fab148, type: 3}
+  destroySounds: []

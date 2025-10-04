@@ -1,18 +1,19 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class HoleScript : BasicTickable
 {
     public Sprite filledHoleSprite;
-    private bool _isFilled;
-    
-    public void Fill()
+    public bool isFilled;
+
+    private void Fill()
     {
-        if (_isFilled)
+        if (isFilled)
         {
             return;
         }
 
-        _isFilled = true;
+        isFilled = true;
         SpriteRenderer.sprite = filledHoleSprite;
     }
 
@@ -21,10 +22,20 @@ public class HoleScript : BasicTickable
         base.OnEndTick();
         
         Collider2D entity = Physics2D.OverlapPoint(transform.position, LayerMask.GetMask("Collision"));
-        if (entity && entity.CompareTag("Boulder"))
+        if (entity && !isFilled)
         {
-            Fill();
-            Destroy(entity.gameObject);
+            if (entity.CompareTag("Boulder"))
+            {
+                GameLogic.PlayAudioClipRandom(triggerSounds);
+                Fill();
+                Destroy(entity.gameObject);
+            } else if (entity.CompareTag("Player"))
+            {
+                GameLogic.PlayAudioClipRandom(PlayerScript.Instance.playerFallSounds);
+                GameLogic.Instance.GameOver("Player jatuh ke jurang");
+                entity.gameObject.GetComponent<PlayerScript>().IsNextTickDestroyScheduled = true;
+            }
+            
         }
     }
 }

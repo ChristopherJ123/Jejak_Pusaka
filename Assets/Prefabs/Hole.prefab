@@ -147,4 +147,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9815a44c3b7a02f4f825c27f8b5bb847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerSounds:
+  - {fileID: 8300000, guid: 60131b8c3b6d5e2428273a1b15cfd65d, type: 3}
+  destroySounds: []
   filledHoleSprite: {fileID: 1607588586, guid: f785b4658f77c1d49a0100c4457adf1c, type: 3}
+  isFilled: 0

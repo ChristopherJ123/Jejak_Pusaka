@@ -45,9 +45,13 @@ public class LoopingAudioPlayer : MonoBehaviour
     public void PlayAudioClipLoop(AudioClip clipToLoop)
     {
         // If a valid clip is provided, assign it to the AudioSource
-        if (clipToLoop != null)
+        if (clipToLoop)
         {
             _audioSource.clip = clipToLoop;
+        }
+        else
+        {
+            return;
         }
 
         // Set the boolean to true, the Update() method will handle the rest

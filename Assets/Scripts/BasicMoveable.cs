@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using JetBrains.Annotations;
+using UnityEngine;
 
 public class BasicMoveable : BasicTickable, IMoveable
 {
@@ -6,17 +7,24 @@ public class BasicMoveable : BasicTickable, IMoveable
     private static readonly int IsMoving = Animator.StringToHash("IsWalking");
     private static readonly int X = Animator.StringToHash("X");
     private static readonly int Y = Animator.StringToHash("Y");
+    protected LoopingAudioPlayer LoopingAudioPlayer;
+    
     protected LayerMask LayerAllowMovement;
     protected LayerMask LayerStopsMovement;
     protected Transform MovePoint;
     
     [SerializeField]
-    protected AudioClip[] moveSounds;
+    public AudioClip[] moveSounds;
+    [SerializeField]
+    protected AudioClip movingSound;
+    [SerializeField]
+    protected AudioClip[] hitSounds;
     
     public Vector3 StartTickPosition { get; set; }
     public Vector3 EndTickPosition { get; set; }
     public Vector3 LastMoveDir { get; set; }
     public Vector3 ScheduledMoveDir { get; set; }
+    public bool IsHitSoundScheduled { get; set; }
     public bool IsIceMoveable { get; set; }
     public bool IsPinballMoveable { get; set; }
     public bool IsSlopeMoveable { get; set; }
@@ -46,8 +54,12 @@ public class BasicMoveable : BasicTickable, IMoveable
         // 2. check if there is a slope move redirect
         moveDir = SlopeGlobalScript.RedirectMoveFromSlopeIfAny(gameObject, moveDir);
         
+        // print($"{transform.name} moveDir then={moveDir} from={transform.position}");
+        
         // 3. check if there is a boulder slope move redirect
         moveDir = SlopeGlobalScript.RedirectMoveFromBoulderIfAny(gameObject, moveDir);
+        
+        // print($"{transform.name} moveDir now={moveDir} going to={transform.position + moveDir}");
         
         // 4. check if there is a pinball slope move redirect
         moveDir = SlopeGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
@@ -58,9 +70,16 @@ public class BasicMoveable : BasicTickable, IMoveable
             // 6. it checks if it is not colliding with another Collision Layer
             if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
             {
+                // print(transform.name + $" is NOT colliding with something, moveDir={moveDir}");;
+                // print($"FINAL {transform.name} moveDir now={moveDir} going to={transform.position + moveDir}");
                 return true;
-            }        
+            }
+            // else
+            // {
+            //     print(transform.name + " is colliding with something");;
+            // }
         }
+        // print($"FINAL RETURN FALSE {transform.name} moveDir now={moveDir} going to={transform.position + moveDir}");
         return false;
     }
 
@@ -76,9 +95,18 @@ public class BasicMoveable : BasicTickable, IMoveable
     {
         if (IsNextTickMoveScheduled)
         {
+            if (!IsHitSoundScheduled) GameLogic.PlayAudioClipRandom(triggerSounds);
+            // if (movingSound) print($"Playing {transform.name} moving sound {movingSound.name} with moveDir {ScheduledMoveDir}");
+            LoopingAudioPlayer.PlayAudioClipLoop(movingSound);
             Move(ScheduledMoveDir);
             LastMoveDir = ScheduledMoveDir;
             ScheduledMoveDir = Vector3.zero;
+            IsHitSoundScheduled = true;
+        } else if(IsHitSoundScheduled)
+        {
+            var hitCollider = Physics2D.OverlapPoint(transform.position + LastMoveDir, LayerStopsMovement);
+            if (hitCollider) OnHit(hitCollider.gameObject);
+            else OnHit();
         }
     }
 
@@ -99,7 +127,24 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual void PlayMoveSound()
     {
+        if (moveSounds.Length > 0) print($"Playing move sounds for {transform.name} with moveDir {LastMoveDir}");
         GameLogic.PlayAudioClipRandom(moveSounds);
+    }
+
+    protected virtual void OnHit()
+    {
+        // print("playing hit sound");
+        GameLogic.PlayAudioClipRandom(hitSounds);
+        IsHitSoundScheduled = false;
+        LoopingAudioPlayer.StopLooping();
+    }
+    
+    protected virtual void OnHit(GameObject hitObject)
+    {
+        // print("playing hit sound");
+        GameLogic.PlayAudioClipRandom(hitSounds);
+        IsHitSoundScheduled = false;
+        LoopingAudioPlayer.StopLooping();
     }
     
     public override void OnStartTick(Vector3 playerMoveDir)
@@ -131,6 +176,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         // Finished doing scheduled move from OnStartTick
         // Called here so that other Tickable that depends on this variable won't get unexpected result from
         // OnStartTick()'s random ordering.
+        // Reset IsNextTickMoveScheduled.
         if (IsNextTickMoveScheduled)
         {
             IsNextTickMoveScheduled = false;
@@ -145,7 +191,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     public override void PostEndTick()
     {
         base.PostEndTick();
-        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 100) + 10;
+        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 10) + 10;
 
         // Ditaruh sini soalnya agar EndTickPosition ini kalau di panggil di OnEndTick() dia akan pasti reference
         // ke EndTickPosition EndTick sebelumnya, daripada setengah2 bisa random kalau ditaruh di OnEndTick()
@@ -156,9 +202,10 @@ public class BasicMoveable : BasicTickable, IMoveable
     public override void Start()
     {
         base.Start();
+        LoopingAudioPlayer = gameObject.AddComponent<LoopingAudioPlayer>();
         _animator = GetComponent<Animator>();
-        LayerAllowMovement = LayerMask.GetMask("Tile");
-        LayerStopsMovement = LayerMask.GetMask("Collision");
+        LayerAllowMovement = GameLogic.LayerAllowsMovement;
+        LayerStopsMovement = GameLogic.LayerBlocksMovement;
         
         IsIceMoveable = true;
         IsPinballMoveable = true;
@@ -175,7 +222,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         // Animation moving
         if (IsStartTicking)
         {
-            transform.position = Vector3.MoveTowards(transform.position, MovePoint.position, 5f * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, MovePoint.position, GameLogic.Instance.speed * Time.deltaTime);
             if (IsStationary())
             {
                 if (_animator)

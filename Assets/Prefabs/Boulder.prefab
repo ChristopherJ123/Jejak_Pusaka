@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 6921991806355736673}
   - component: {fileID: 5857373632301810803}
   - component: {fileID: 8554534997387943548}
-  - component: {fileID: 4315984085037800829}
   m_Layer: 6
   m_Name: Boulder
   m_TagString: Boulder
@@ -61,7 +60,7 @@ Transform:
   m_GameObject: {fileID: 7929374369848886349}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5, y: 2.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -181,17 +180,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98fd8bb32b23b3f41a1b95ae37c80f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerSounds: []
   destroySounds: []
   moveSounds:
   - {fileID: 8300000, guid: ff625d0bc690a2e4c80ca564b8e2613a, type: 3}
+  movingSound: {fileID: 8300000, guid: 0a3ed42798d0e964f8abc5f231547a7e, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: 2f5f0a1121260104fb1a13cf9e332f96, type: 3}
   boulderFloatingPrefab: {fileID: 7929374369848886349, guid: e9660813768fba14088c6b308ab75a57, type: 3}
-  rollingSound: {fileID: 8300000, guid: 0a3ed42798d0e964f8abc5f231547a7e, type: 3}
   boulderWaterSounds:
   - {fileID: 8300000, guid: 156d67b168918fd4d86218810591f82d, type: 3}
   boulderLavaSounds:
   - {fileID: 8300000, guid: 09b1c716fd3e382409a5e85e2952d84d, type: 3}
   - {fileID: 8300000, guid: 12cca07c25f677f48b31d218c232499f, type: 3}
   - {fileID: 8300000, guid: 70a32a5fe7b6dde4db586d6076e5cbc6, type: 3}
+  boulderSplatSounds:
+  - {fileID: 8300000, guid: a3299a76709dc7148ae2cfdfd4ef3abe, type: 3}
   isTriggeredNear: 0
 --- !u!82 &8554534997387943548
 AudioSource:
@@ -290,16 +294,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4315984085037800829
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7929374369848886349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5eabed13afb847d691222acf1160fba6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shouldBePlaying: 0
