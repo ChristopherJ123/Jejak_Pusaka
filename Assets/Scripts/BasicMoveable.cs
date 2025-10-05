@@ -40,10 +40,15 @@ public class BasicMoveable : BasicTickable, IMoveable
         return Vector3.Distance(transform.position, MovePoint.position) == 0;
     }
 
-    public virtual bool IsPlayerPushing(Vector3 moveDirection)
+    public virtual bool IsLivingEntityPushing(Vector3 moveDirection)
     {
-        return PlayerScript.Instance.IsNextTickMoveScheduled &&
-               PlayerScript.Instance.transform.position + moveDirection == transform.position;
+        var collide = Physics2D.OverlapPoint(transform.position - moveDirection, LayerStopsMovement);
+        if (collide && collide.TryGetComponent<BasicLivingEntity>(out var livingEntity))
+        {
+            return livingEntity.IsNextTickMoveScheduled &&
+                   livingEntity.transform.position + moveDirection == transform.position;
+        }
+        return false;
     }
 
     public virtual bool CanMoveOrRedirect(ref Vector3 moveDir)
@@ -104,7 +109,26 @@ public class BasicMoveable : BasicTickable, IMoveable
             IsHitSoundScheduled = true;
         } else if(IsHitSoundScheduled)
         {
-            var hitCollider = Physics2D.OverlapPoint(transform.position + LastMoveDir, LayerStopsMovement);
+            Collider2D hitCollider;
+            hitCollider = Physics2D.OverlapPoint(transform.position + LastMoveDir, LayerStopsMovement);
+            
+            // // Hardcode for now
+            // if (transform.CompareTag("Boulder"))
+            // {
+            //     if (Mathf.Approximately(Vector3.Distance(Vector3.zero, LastMoveDir), Vector3.Distance(Vector3.zero, new Vector3(1, 1, 0))))
+            //     {
+            //         hitCollider = Physics2D.OverlapPoint(transform.position + Vector3.down, LayerStopsMovement);
+            //         if (hitCollider.CompareTag("Player"))
+            //         {
+            //             LastMoveDir = Vector3.down;
+            //         }
+            //         else
+            //         {
+            //             hitCollider = Physics2D.OverlapPoint(transform.position + LastMoveDir, LayerStopsMovement);
+            //         }
+            //     }
+            // }
+            
             if (hitCollider) OnHit(hitCollider.gameObject);
             else OnHit();
         }
@@ -153,7 +177,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         
         DoScheduledMove();
         
-        if (IsPlayerPushing(playerMoveDir) && !IsNextTickMoveScheduled)
+        if (IsLivingEntityPushing(playerMoveDir) && !IsNextTickMoveScheduled)
         {
             if (CanMoveOrRedirect(ref playerMoveDir))
             {

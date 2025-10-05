@@ -9,6 +9,9 @@ public class TitleScreenScript : MonoBehaviour
     private GameObject _teamInputPanel;
     private GameObject _aboutPanel;
     private GameObject _gameEndPanel;
+    private GameObject _cheatsheetPanel;
+    private GameObject _PlayButton;
+    private GameObject _TutorialButton;
     private TMP_InputField _teamNameInput;
     [SerializeField]
     private TMP_Text teamNameEndText;
@@ -22,6 +25,10 @@ public class TitleScreenScript : MonoBehaviour
         _teamInputPanel.SetActive(false);
         _aboutPanel = GameObject.Find("AboutPanel");
         _aboutPanel.SetActive(false);
+        _cheatsheetPanel = GameObject.Find("CheatSheetPanel");
+        _cheatsheetPanel.SetActive(false);
+        _PlayButton = GameObject.Find("Play Button");
+        _TutorialButton = GameObject.Find("Tutorial Button");
         
         _gameEndPanel = GameObject.Find("GameEndPanel");
         _gameEndPanel.SetActive(false);
@@ -33,9 +40,12 @@ public class TitleScreenScript : MonoBehaviour
         {
             int minutes = Mathf.FloorToInt(GlobalGameManager.Instance.elapsedTime / 60);
             int seconds = Mathf.FloorToInt(GlobalGameManager.Instance.elapsedTime % 60);
+            WebBridge.SendScore(GlobalGameManager.Instance.TotalScore);
             teamNameEndText.text = GlobalGameManager.Instance.teamName;
             finalScoreText.text = $"Final score = {GlobalGameManager.Instance.TotalScore.ToString()}\nElapsed time = {minutes:00}:{seconds:00}";
             _gameEndPanel.SetActive(true);
+            _PlayButton.SetActive(false);
+            _TutorialButton.SetActive(false);
         }
     }
 
@@ -47,6 +57,16 @@ public class TitleScreenScript : MonoBehaviour
     public void HideTeamInput()
     {
         _teamInputPanel.SetActive(false);
+    }
+    
+    public void ShowCheatsheet()
+    {
+        _cheatsheetPanel.SetActive(true);
+    }
+    
+    public void HideCheatsheet()
+    {
+        _cheatsheetPanel.SetActive(false);
     }
 
     public void ShowAbout()

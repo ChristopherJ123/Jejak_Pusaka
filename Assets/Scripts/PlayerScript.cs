@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class PlayerScript : BasicMoveable
+public class PlayerScript : BasicLivingEntity
 {
     public static PlayerScript Instance;
     
@@ -21,7 +21,7 @@ public class PlayerScript : BasicMoveable
     /// </summary>
     /// <param name="playerMoveDir">Player move direction</param>
     /// <returns></returns>
-    private bool PlayerMoveCondition(Vector3 playerMoveDir)
+    private bool LivingEntityMoveCondition(Vector3 playerMoveDir)
     {
         if (!isAlive) return false;
         
@@ -30,7 +30,7 @@ public class PlayerScript : BasicMoveable
 
         foreach (var moveable in allMoveables)
         {
-            if (moveable.IsPlayerPushing(playerMoveDir))
+            if (moveable.IsLivingEntityPushing(playerMoveDir))
             {
                 if (moveable.CanMoveOrRedirect(ref playerMoveDir))
                 {
@@ -44,7 +44,7 @@ public class PlayerScript : BasicMoveable
         return true;
     }
 
-    public override bool IsPlayerPushing(Vector3 moveDirection)
+    public override bool IsLivingEntityPushing(Vector3 moveDirection)
     {
         // Return false if you don't want to have infinite loop 👀. Well actually since player is
         // an instance of IMoveable, this method bawaan is not true.
@@ -62,14 +62,11 @@ public class PlayerScript : BasicMoveable
         
         // First check if player hits a pinball and needs a moveDir redirect
         moveDir = PinballGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
-        
-        // Second check if there is a slope move redirect
-        moveDir = SlopeGlobalScript.RedirectMoveFromSlopeIfAny(gameObject, moveDir);
 
         // Thirdly check if player can move entities, more detailed see method docs
-        var result = PlayerMoveCondition(moveDir);
+        var result = LivingEntityMoveCondition(moveDir);
         
-        // Fourth checks if it is out of bounds (not touching any Tile Layer)
+        // Custom check, just like GameLogic's IsSpaceAvailable but modified so that we can go to treasure (other living entities can't).
         if (result && Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
             // Lastly Check if player is not colliding with an IMoveable or treasure
@@ -179,8 +176,7 @@ public class PlayerScript : BasicMoveable
                 {
                     ScheduleMove(moveDirectionInput);
                     GameLogic.Instance.StartTick(moveDirectionInput);
-                }
-                _postMoveAndTickEnd = true;
+                }                _postMoveAndTickEnd = true;
             }
         }
     }

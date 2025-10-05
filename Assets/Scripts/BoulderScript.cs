@@ -85,6 +85,7 @@ public class BoulderScript : BasicMoveable
                 if (!GameLogic.IsSpaceAvailable(transform.position + new Vector3(LastMoveDir.x, 0, 0)))
                 {
                     base.OnHit(hitObject);
+                    print("RETURNING HERE");
                     return;
                 }
             }
@@ -92,6 +93,7 @@ public class BoulderScript : BasicMoveable
             GameLogic.PlayAudioClipRandom(boulderSplatSounds);
             GameLogic.Instance.GameOver("Player terlindas oleh boulder");
             Move(LastMoveDir);
+            base.OnHit(hitObject);
         }
         else
         {

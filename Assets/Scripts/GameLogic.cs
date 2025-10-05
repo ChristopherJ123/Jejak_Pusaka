@@ -128,10 +128,39 @@ public class GameLogic : MonoBehaviour
         // print("start tick");
         isCurrentlyTicking = true;
         waitingForAllStartTickToFinish = true;
-        var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-            .OfType<ITickable>();
+        
+        // All Living Entities first
+        var allLivingEntities = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+            .OfType<ILivingEntity>();
+        foreach (var livingEntity in allLivingEntities)
+        {
+            if (excludeTypes.Length > 0 && excludeTypes.Contains(livingEntity.GetType()))
+            {
+                continue;
+            }
 
-        var tickables = allTickables as ITickable[] ?? allTickables.ToArray();
+            if (livingEntity is PlayerScript)
+            {
+                // If player
+                livingEntity.OnLivingEntityStartTick(playerMoveDir);
+            }
+            else
+            {
+                // If AI
+                livingEntity.OnLivingEntityStartTick();
+            }
+        }
+        
+        // All Tickables
+        var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+            .OfType<ITickable>().OrderBy(obj =>
+            {
+                if (obj is PlayerScript) return 0;
+                if (obj is BasicAI) return 1;
+                return 2;
+            });
+
+        var tickables = allTickables.ToArray();
         foreach (var tickable in tickables)
         {
             if (excludeTypes.Length > 0 && excludeTypes.Contains(tickable.GetType()))

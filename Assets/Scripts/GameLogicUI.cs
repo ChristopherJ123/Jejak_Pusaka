@@ -52,6 +52,11 @@ public class GameLogicUI : MonoBehaviour
             _totalScoreText.gameObject.SetActive(false);
         }
     }
+    
+    public void SetTimerColor(Color color)
+    {
+        _timerText.color = color;
+    }
 
     public void ShowDeathScreen(string message)
     {

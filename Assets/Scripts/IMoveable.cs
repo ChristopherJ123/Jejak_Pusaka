@@ -18,7 +18,7 @@ public interface IMoveable
     /// </summary>
     bool IsBoulderSlopeMoveable { get; set; }
     bool IsStationary();
-    bool IsPlayerPushing(Vector3 moveDirection);
+    bool IsLivingEntityPushing(Vector3 moveDirection);
     bool CanMoveOrRedirect(ref Vector3 moveDir);
     void ScheduleMove(Vector3 moveDir, bool doExtraTickLoop = false);
     void DoScheduledMove();

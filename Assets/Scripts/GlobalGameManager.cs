@@ -13,10 +13,12 @@ public class GlobalGameManager : MonoBehaviour
     public string teamName = "";
     [HideInInspector]
     public bool isGameEnd;
-    public float timeLimit = 480f;
+    private readonly float _timeLimit = 600;
     public float elapsedTime;
     public bool isTimerStarted;
     public int scorePerTreasure = 100;
+    
+    private bool _hasTriggeredZeroEvent = false;
     
     public int TotalScore { get; private set; }
 
@@ -41,7 +43,44 @@ public class GlobalGameManager : MonoBehaviour
 
         elapsedTime += Time.deltaTime;
 
-        GameLogicUI.Instance.ShowTimer(timeLimit - elapsedTime);;
+        GameLogicUI.Instance.ShowTimer(_timeLimit - elapsedTime);
+        
+        float remainingTime = Mathf.Max(0, _timeLimit - elapsedTime);
+
+        // --- Color transitions ---
+        if (remainingTime <= 60f)
+        {
+            GameLogicUI.Instance.SetTimerColor(Color.red);
+        }
+        else if (remainingTime <= 120f)
+        {
+            GameLogicUI.Instance.SetTimerColor(Color.yellow);
+        }
+        else
+        {
+            GameLogicUI.Instance.SetTimerColor(Color.white);
+        }
+
+        // --- Update the timer display ---
+        GameLogicUI.Instance.ShowTimer(remainingTime);
+
+        // --- Trigger event when timer hits zero ---
+        if (remainingTime <= 0f && !_hasTriggeredZeroEvent)
+        {
+            _hasTriggeredZeroEvent = true;
+            OnTimerEnd();
+        }
+    }
+    
+    private void OnTimerEnd()
+    {
+        Debug.Log("⏰ Time's up!");
+        isGameEnd = true;
+
+        // Example: play sound, change level, or show results
+        // PlayExitSound();
+        // ChangeLevel("GameOver");
+        ChangeLevel("0", GameLogic.Instance.Score);
     }
 
     public void ChangeLevel(string level, int score = 0, bool addScore = true)
