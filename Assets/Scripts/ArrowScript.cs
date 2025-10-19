@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ArrowScript : BasicMoveable, IDirectional
 {
+    [SerializeField]
+    private AudioClip[] arrowPenetrateSounds;
     public bool isTriggeredNear;
     private readonly Vector3[] _triggerFar =
     {
@@ -83,17 +86,24 @@ public class ArrowScript : BasicMoveable, IDirectional
 
     protected override void OnHit(GameObject hitObject)
     {
-        base.OnHit(hitObject);
         if (hitObject.CompareTag("Player"))
         {
             GameLogic.Instance.GameOver("Player ketusuk panah");
+        } else if (hitObject.CompareTag("Mummy"))
+        {
+            hitObject.transform.localScale = new Vector3(hitObject.transform.localScale.x, hitObject.transform.localScale.y / 4, hitObject.transform.localScale.z);
+            hitObject.GetComponent<MummyScript>().IsAlive = false;
+            GameLogic.PlayAudioClipRandom(arrowPenetrateSounds);
+            Move(LastMoveDir);
+            return;
         }
+        base.OnHit(hitObject);
     }
 
-    public override void OnStartTick(Vector3 playerMoveDir)
+    public override void OnStartTick()
     {
         // print(transform.name + " has start tick");
-        base.OnStartTick(playerMoveDir);
+        base.OnStartTick();
         
         if (IsArrowPushing())
         {
@@ -244,6 +254,6 @@ public class ArrowScript : BasicMoveable, IDirectional
                 _entityInAreaBefore.Add(direction, entity.gameObject);
             }
         }
-        print($"{transform.name} LastMoveDir is {LastMoveDir}");
+        // print($"{transform.name} LastMoveDir is {LastMoveDir}");
     }
 }

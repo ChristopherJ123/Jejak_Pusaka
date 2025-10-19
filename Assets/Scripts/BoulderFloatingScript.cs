@@ -2,9 +2,9 @@
 {
     // For z index
     
-    public override void PostEndTick()
+    public override void OnPostEndTick()
     {
-        base.PostEndTick();
+        base.OnPostEndTick();
         SpriteRenderer.sortingOrder--;
     }
 }

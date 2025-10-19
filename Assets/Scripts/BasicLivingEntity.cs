@@ -1,24 +1,56 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using NUnit.Framework;
+using UnityEngine;
 
 public class BasicLivingEntity : BasicMoveable, ILivingEntity
 {
-    public void OnLivingEntityStartTick(Vector3 scheduledMoveDir = new Vector3())
+    public bool IsAlive { get; set; }
+    
+    public virtual bool LivingEntityMoveCondition(Vector3 moveDir)
     {
-        if (scheduledMoveDir != Vector3.zero)
+        if (!IsAlive)
         {
-            // This probably means a player is trying to move
-            if (CanMoveOrRedirect(ref scheduledMoveDir))
+            print("Returning false for dead entity");
+            return false;
+        }
+        
+        var allMoveables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+            .OfType<IMoveable>();
+
+        foreach (var moveable in allMoveables)
+        {
+            if (moveable.IsLivingEntityPushing(out var livingEntity))
             {
-                ScheduleMove(scheduledMoveDir);
+                print("SOMEHOME THIS IS TRUE");
+                if (moveable.CanMoveOrRedirect(ref moveDir))
+                {
+                    print($"{livingEntity.name} can move to {moveDir}");
+                    return true;
+                }
+                return false;
             }
         }
-        else
-        {
-            ScheduleMove();
-        }
+
+        print("Returning true for normal movement");
+        return true;
     }
 
-    public virtual void ScheduleMove()
+    public void OnLivingEntityStartTick()
     {
+        if (PlayerScript.Instance.IsNextTickMoveScheduled && PlayerScript.Instance.scheduledMoveByUser && IsAlive)
+        {
+            ScheduleAutoMove();
+        }
+        PlayMoveSound();
+    }
+
+    public virtual void ScheduleAutoMove()
+    {
+    }
+
+    public virtual void Awake()
+    {
+        IsAlive = true;
     }
 }

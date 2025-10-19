@@ -39,11 +39,13 @@ public class PinballGlobalScript : MonoBehaviour
                         return initialMoveDir;
                     }
                     GameLogic.PlayAudioClipRandom(_pinballTriggerSounds);
+                    // Move changed
                     return trigger;
                 }
                 if (entity.transform.position + initialMoveDir == pinball.transform.position)
                 {
                     GameLogic.PlayAudioClipRandom(_pinballTriggerSounds);
+                    // Move mirrored back
                     return -initialMoveDir;
                 }
             }

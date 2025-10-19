@@ -114,6 +114,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 034afb76290a18b49b1ba5a3e87d1251, type: 3}
   playerFallSounds:
   - {fileID: 8300000, guid: bb5787511f8a1294d852ee19d806d08e, type: 3}
+  playerMummySounds:
+  - {fileID: 8300000, guid: f4fd0b74c4f95044f976fadbbfdd606a, type: 3}
   isAlive: 1
 --- !u!61 &1967954839141210705
 BoxCollider2D:

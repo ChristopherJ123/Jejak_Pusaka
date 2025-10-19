@@ -6,16 +6,16 @@ public class TreasureScript : BasicTickable
     [SerializeField]
     private Sprite[] sprites;
     
-    public virtual bool IsPlayerPushing(Vector3 moveDirection)
+    public virtual bool IsPlayerPushing()
     {
         return PlayerScript.Instance.IsNextTickMoveScheduled &&
-               PlayerScript.Instance.transform.position + moveDirection == transform.position;
+               PlayerScript.Instance.transform.position + PlayerScript.Instance.ScheduledMoveDir == transform.position;
     }
-    public override void OnStartTick(Vector3 playerMoveDir)
+    public override void OnStartTick()
     {
-        base.OnStartTick(playerMoveDir);
+        base.OnStartTick();
 
-        if (IsPlayerPushing(playerMoveDir))
+        if (IsPlayerPushing())
         {
             GameLogic.Instance.AddScore();
             GameLogic.PlayAudioClipRandom(triggerSounds);

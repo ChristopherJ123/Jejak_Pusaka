@@ -15,7 +15,7 @@ public class BasicTickable : MonoBehaviour, ITickable
     public bool DoExtraTickLoop { get; set; }
     public bool IsStartTicking { get; set; }
     public bool IsEndTicking { get; set; }
-    public virtual void OnStartTick(Vector3 playerMoveDir)
+    public virtual void OnStartTick()
     {
         if (IsNextTickDestroyScheduled)
         {
@@ -24,7 +24,7 @@ public class BasicTickable : MonoBehaviour, ITickable
         }
     }
 
-    public virtual void PostStartTick(Vector3 playerMoveDir)
+    public virtual void OnPostStartTick()
     {
         
     }
@@ -34,7 +34,7 @@ public class BasicTickable : MonoBehaviour, ITickable
         
     }
 
-    public virtual void PostEndTick()
+    public virtual void OnPostEndTick()
     {
         
     }

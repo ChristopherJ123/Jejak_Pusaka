@@ -18,8 +18,8 @@ public interface ITickable
     /// <summary>
     /// Use OnStartTick to indicate the logic that works with random ordering of all Tickable elements.
     /// </summary>
-    /// <param name="playerMoveDir">Player move direction.</param>
-    void OnStartTick(Vector3 playerMoveDir);
+    void OnStartTick();
+
     /// <summary>
     /// Use PostStartTick to indicate the logic that's called after OnStartTick is finished. This method should
     /// only implement any logic that happens instantaneously and configurations that don't depend on random ordering.
@@ -30,9 +30,8 @@ public interface ITickable
     /// other tickables could use another tickable's IsNextTickScheduled without interfering with the random ordering
     /// messing configuration variables up.
     /// </summary>
-    /// <param name="playerMoveDir">Player move direction.</param>
-    void PostStartTick(Vector3 playerMoveDir);
+    void OnPostStartTick();
     void OnEndTick();
-    void PostEndTick();
+    void OnPostEndTick();
     void OnReset();
 }

@@ -40,14 +40,21 @@ public class BasicMoveable : BasicTickable, IMoveable
         return Vector3.Distance(transform.position, MovePoint.position) == 0;
     }
 
-    public virtual bool IsLivingEntityPushing(Vector3 moveDirection)
+    public virtual bool IsLivingEntityPushing(out BasicLivingEntity livingEntity)
     {
-        var collide = Physics2D.OverlapPoint(transform.position - moveDirection, LayerStopsMovement);
-        if (collide && collide.TryGetComponent<BasicLivingEntity>(out var livingEntity))
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1, LayerStopsMovement);
+        foreach (var col in colliders)
         {
-            return livingEntity.IsNextTickMoveScheduled &&
-                   livingEntity.transform.position + moveDirection == transform.position;
+            if (col.TryGetComponent<BasicLivingEntity>(out var entity))
+            {
+                print($"{entity.name}, IsNextTickMoveScheduled={entity.IsNextTickMoveScheduled}, {entity.transform.position}+{entity.ScheduledMoveDir}={transform.position}");
+                livingEntity = entity;
+                print($"{entity.name}, {entity.IsNextTickMoveScheduled && entity.transform.position + entity.ScheduledMoveDir == transform.position}");
+                return entity.IsNextTickMoveScheduled &&
+                       entity.transform.position + entity.ScheduledMoveDir == transform.position;
+            }
         }
+        livingEntity = null;
         return false;
     }
 
@@ -105,7 +112,6 @@ public class BasicMoveable : BasicTickable, IMoveable
             LoopingAudioPlayer.PlayAudioClipLoop(movingSound);
             Move(ScheduledMoveDir);
             LastMoveDir = ScheduledMoveDir;
-            ScheduledMoveDir = Vector3.zero;
             IsHitSoundScheduled = true;
         } else if(IsHitSoundScheduled)
         {
@@ -171,25 +177,26 @@ public class BasicMoveable : BasicTickable, IMoveable
         LoopingAudioPlayer.StopLooping();
     }
     
-    public override void OnStartTick(Vector3 playerMoveDir)
+    public override void OnStartTick()
     {
-        base.OnStartTick(playerMoveDir);
+        base.OnStartTick();
         
         DoScheduledMove();
         
-        if (IsLivingEntityPushing(playerMoveDir) && !IsNextTickMoveScheduled)
+        if (IsLivingEntityPushing(out var livingEntity) && !IsNextTickMoveScheduled)
         {
-            if (CanMoveOrRedirect(ref playerMoveDir))
+            var scheduledMoveDir = livingEntity.ScheduledMoveDir;
+            if (CanMoveOrRedirect(ref scheduledMoveDir))
             {
                 PlayMoveSound();
-                Move(playerMoveDir);
+                Move(scheduledMoveDir);
             }
         }
     }
 
-    public override void PostStartTick(Vector3 playerMoveDir)
+    public override void OnPostStartTick()
     {
-        base.PostStartTick(playerMoveDir);
+        base.OnPostStartTick();
         StartTickPosition = transform.position;
 
         // Turn off DoExtraTickLoop after IsNextTickScheduled is done (On the next tick)
@@ -204,6 +211,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         if (IsNextTickMoveScheduled)
         {
             IsNextTickMoveScheduled = false;
+            ScheduledMoveDir = Vector3.zero;
         }
     }
 
@@ -212,10 +220,10 @@ public class BasicMoveable : BasicTickable, IMoveable
         base.OnEndTick();
     }
 
-    public override void PostEndTick()
+    public override void OnPostEndTick()
     {
-        base.PostEndTick();
-        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 10) + 10;
+        base.OnPostEndTick();
+        SpriteRenderer.sortingOrder = -(int)(transform.position.y * 10);
 
         // Ditaruh sini soalnya agar EndTickPosition ini kalau di panggil di OnEndTick() dia akan pasti reference
         // ke EndTickPosition EndTick sebelumnya, daripada setengah2 bisa random kalau ditaruh di OnEndTick()

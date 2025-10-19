@@ -35,7 +35,11 @@ public class HoleScript : BasicTickable
                 GameLogic.Instance.GameOver("Player jatuh ke jurang");
                 entity.gameObject.GetComponent<PlayerScript>().IsNextTickDestroyScheduled = true;
             }
-            
+            else if (entity.CompareTag("Mummy"))
+            {
+                GameLogic.PlayAudioClipRandom(PlayerScript.Instance.playerFallSounds);
+                Destroy(entity.gameObject);
+            }
         }
     }
 }

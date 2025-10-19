@@ -2,6 +2,14 @@
 
 public interface ILivingEntity
 {
-    void OnLivingEntityStartTick(Vector3 scheduledMoveDir = new Vector3());
-    void ScheduleMove();
+    bool IsAlive { get; set; }
+    
+    /// <summary>
+    /// Determine whether LivingEntity can move in a certain direction.
+    /// </summary>
+    /// <param name="moveDir">LivingEntity move direction</param>
+    /// <returns></returns>
+    bool LivingEntityMoveCondition(Vector3 moveDir);
+    void OnLivingEntityStartTick();
+    void ScheduleAutoMove();
 }

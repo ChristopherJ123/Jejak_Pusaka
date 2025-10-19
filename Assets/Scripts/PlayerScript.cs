@@ -1,53 +1,29 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerScript : BasicLivingEntity
 {
     public static PlayerScript Instance;
+    public bool scheduledMoveByUser;
     
     [SerializeField]
     private AudioClip[] playerWaterSounds;
     [SerializeField]
     private AudioClip[] playerLavaSounds;
     public AudioClip[] playerFallSounds;
+    [SerializeField]
+    private AudioClip[] playerMummySounds;
     
-    public bool isAlive = true;
     private bool _postMoveAndTickEnd;
     private float _moveIntervalTimer;
-    
-    /// <summary>
-    /// Determine whether Player can move in a certain direction.
-    /// </summary>
-    /// <param name="playerMoveDir">Player move direction</param>
-    /// <returns></returns>
-    private bool LivingEntityMoveCondition(Vector3 playerMoveDir)
-    {
-        if (!isAlive) return false;
-        
-        var allMoveables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-            .OfType<IMoveable>();
 
-        foreach (var moveable in allMoveables)
-        {
-            if (moveable.IsLivingEntityPushing(playerMoveDir))
-            {
-                if (moveable.CanMoveOrRedirect(ref playerMoveDir))
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        // print("Returning true for normal movement");
-        return true;
-    }
-
-    public override bool IsLivingEntityPushing(Vector3 moveDirection)
+    public override bool IsLivingEntityPushing(out BasicLivingEntity livingEntity)
     {
         // Return false if you don't want to have infinite loop 👀. Well actually since player is
         // an instance of IMoveable, this method bawaan is not true.
+        livingEntity = null;
         return false;
     }
 
@@ -82,7 +58,7 @@ public class PlayerScript : BasicLivingEntity
         return false;
     }
     
-    public override void OnStartTick(Vector3 playerMoveDir)
+    public override void OnStartTick()
     {
         // print("Player start tick");
         if (IsNextTickDestroyScheduled)
@@ -98,6 +74,7 @@ public class PlayerScript : BasicLivingEntity
     public override void OnEndTick()
     {
         base.OnEndTick();
+        if (scheduledMoveByUser) scheduledMoveByUser = false;
         
         // Check if boulder is on water/lava
         bool onWater = false;
@@ -136,14 +113,26 @@ public class PlayerScript : BasicLivingEntity
         }
     }
 
-    public override void PostEndTick()
+    public override void OnPostEndTick()
     {
-        base.PostEndTick();
+        base.OnPostEndTick();
         SpriteRenderer.sortingOrder += 2;
+        
+        // Put here because mummy can be killed in OnEndTick() so no racing condition
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1f);
+        foreach (var monster in colliders)
+        {
+            if (monster.CompareTag("Mummy") && monster.TryGetComponent<MummyScript>(out var mummy) && mummy.IsAlive)
+            {
+                GameLogic.PlayAudioClipRandom(playerMummySounds);
+                GameLogic.Instance.GameOver("Player terciduk oleh mummy");
+            }
+        }
     }
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
         Instance = this;
     }
 
@@ -172,11 +161,10 @@ public class PlayerScript : BasicLivingEntity
                                (Math.Abs(moveDirectionInput.y) == 1 && moveDirectionInput.x == 0)
                                ) && !GameLogic.Instance.waitingForAllEndTickToFinish && _moveIntervalTimer <= 0)
             {
-                if (CanMoveOrRedirect(ref moveDirectionInput))
-                {
-                    ScheduleMove(moveDirectionInput);
-                    GameLogic.Instance.StartTick(moveDirectionInput);
-                }                _postMoveAndTickEnd = true;
+                ScheduleMove(moveDirectionInput);
+                scheduledMoveByUser = true;
+                GameLogic.Instance.StartTick();
+                _postMoveAndTickEnd = true;
             }
         }
     }

@@ -12,7 +12,8 @@ public class BasicAI : BasicLivingEntity
         List<Node> neighbours = new List<Node>();
         foreach (var moveDir in _moveDirections)
         {
-            if (GameLogic.IsSpaceAvailable(node.WorldPos + moveDir))
+            var collisionPoint = Physics2D.OverlapPoint(node.WorldPos + moveDir, LayerStopsMovement);
+            if (GameLogic.IsSpaceAvailable(node.WorldPos + moveDir) || (collisionPoint && collisionPoint.TryGetComponent<BasicLivingEntity>(out _)))
             {
                 neighbours.Add(new Node(node.WorldPos + moveDir));
             }
@@ -64,7 +65,10 @@ public class BasicAI : BasicLivingEntity
             
             // Check if we reached the goal
             if (currentNode.WorldPos == targetNode.WorldPos)
+            {
                 return RetracePath(startNode, currentNode);
+            }
+
             
             // Expand neighbors
             foreach (var neighborNode in GetNeighboursFromNode(currentNode))
@@ -95,9 +99,9 @@ public class BasicAI : BasicLivingEntity
         return new List<Vector3>();
     }
 
-    public override void ScheduleMove()
+    public override void ScheduleAutoMove()
     {
-        base.ScheduleMove();
+        base.ScheduleAutoMove();
         var path = FindShortestPathToPlayer();
         if (path.Count > 0)
         {

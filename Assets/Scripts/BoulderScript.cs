@@ -77,22 +77,39 @@ public class BoulderScript : BasicMoveable
 
     protected override void OnHit(GameObject hitObject)
     {
-        if (hitObject && hitObject.CompareTag("Player"))
+        if (hitObject)
         {
-            // If diagonal movement then check all collisions (2 collisions total before splatting player)
-            if (Mathf.Approximately(Mathf.Abs(LastMoveDir.x), 1f) && Mathf.Approximately(Mathf.Abs(LastMoveDir.y), 1f))
+            if (hitObject.CompareTag("Player"))
             {
-                if (!GameLogic.IsSpaceAvailable(transform.position + new Vector3(LastMoveDir.x, 0, 0)))
+                // If diagonal movement then check all collisions (2 collisions total before splatting player)
+                if (Mathf.Approximately(Mathf.Abs(LastMoveDir.x), 1f) && Mathf.Approximately(Mathf.Abs(LastMoveDir.y), 1f))
                 {
-                    base.OnHit(hitObject);
-                    print("RETURNING HERE");
-                    return;
+                    if (!GameLogic.IsSpaceAvailable(transform.position + new Vector3(LastMoveDir.x, 0, 0)))
+                    {
+                        base.OnHit(hitObject);
+                        return;
+                    }
                 }
+                hitObject.transform.localScale = new Vector3(hitObject.transform.localScale.x, hitObject.transform.localScale.y / 4, hitObject.transform.localScale.z);
+                GameLogic.PlayAudioClipRandom(boulderSplatSounds);
+                GameLogic.Instance.GameOver("Player terlindas oleh boulder");
+                Move(LastMoveDir);
+            } else if (hitObject.CompareTag("Mummy"))
+            {
+                // If diagonal movement then check all collisions (2 collisions total before splatting player)
+                if (Mathf.Approximately(Mathf.Abs(LastMoveDir.x), 1f) && Mathf.Approximately(Mathf.Abs(LastMoveDir.y), 1f))
+                {
+                    if (!GameLogic.IsSpaceAvailable(transform.position + new Vector3(LastMoveDir.x, 0, 0)))
+                    {
+                        base.OnHit(hitObject);
+                        return;
+                    }
+                }
+                hitObject.transform.localScale = new Vector3(hitObject.transform.localScale.x, hitObject.transform.localScale.y / 4, hitObject.transform.localScale.z);
+                hitObject.GetComponent<MummyScript>().IsAlive = false;
+                GameLogic.PlayAudioClipRandom(boulderSplatSounds);
+                Move(LastMoveDir);
             }
-            hitObject.transform.localScale = new Vector3(hitObject.transform.localScale.x, hitObject.transform.localScale.y / 4, hitObject.transform.localScale.z);
-            GameLogic.PlayAudioClipRandom(boulderSplatSounds);
-            GameLogic.Instance.GameOver("Player terlindas oleh boulder");
-            Move(LastMoveDir);
             base.OnHit(hitObject);
         }
         else
@@ -101,10 +118,10 @@ public class BoulderScript : BasicMoveable
         }
     }
 
-    public override void OnStartTick(Vector3 playerMoveDir)
+    public override void OnStartTick()
     {
         // print(transform.name + " start tick");
-        base.OnStartTick(playerMoveDir);
+        base.OnStartTick();
 
         if (IsBoulderPushing() && GameLogic.IsSpaceAvailable(transform.position + Vector3.down))
         {

@@ -31,8 +31,6 @@ public class GameLogicUI : MonoBehaviour
         _totalScoreText = GameObject.Find("TotalScoreUI").GetComponent<TextMeshProUGUI>();
         _timerText = GameObject.Find("TimerUI").GetComponent<TMP_Text>();
         
-        _teamNameText.text = GlobalGameManager.Instance.teamName;
-        
         _deathScreenCanvas = GameObject.Find("GameOverCanvas").GetComponent<Canvas>();
         _deathScreenMessage = GameObject.Find("DeathMessage").GetComponent<TextMeshProUGUI>();
         _deathScreenCanvas.gameObject.SetActive(false);
@@ -40,6 +38,8 @@ public class GameLogicUI : MonoBehaviour
 
     private void Start()
     {
+        _teamNameText.text = GlobalGameManager.Instance.teamName ?? "Team Name";
+
         GlobalGameManager.Instance.isTimerStarted = isTimerStarted;
         _timerText.gameObject.SetActive(isTimerStarted);
         

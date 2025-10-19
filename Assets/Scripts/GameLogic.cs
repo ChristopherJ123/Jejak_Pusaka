@@ -55,7 +55,7 @@ public class GameLogic : MonoBehaviour
     
     public void GameOver(string message)
     {
-        PlayerScript.Instance.isAlive = false;
+        PlayerScript.Instance.IsAlive = false;
         GameLogicUI.Instance.ShowDeathScreen(message);
     }
 
@@ -123,9 +123,20 @@ public class GameLogic : MonoBehaviour
     /// <param name="playerMoveDir">Player move direction</param>
     /// <param name="excludeTypes">Entity types to exclude from start ticking</param>
     /// <returns></returns>
-    public void StartTick(Vector3 playerMoveDir, params Type[] excludeTypes)
+    public void StartTick(params Type[] excludeTypes)
     {
         // print("start tick");
+        
+        // Quick check if player can even move to desired direction
+        if (PlayerScript.Instance.IsNextTickMoveScheduled)
+        {
+            var check = PlayerScript.Instance.ScheduledMoveDir;
+            if (!PlayerScript.Instance.CanMoveOrRedirect(ref check))
+            {
+                return;
+            }
+        }
+        
         isCurrentlyTicking = true;
         waitingForAllStartTickToFinish = true;
         
@@ -138,17 +149,7 @@ public class GameLogic : MonoBehaviour
             {
                 continue;
             }
-
-            if (livingEntity is PlayerScript)
-            {
-                // If player
-                livingEntity.OnLivingEntityStartTick(playerMoveDir);
-            }
-            else
-            {
-                // If AI
-                livingEntity.OnLivingEntityStartTick();
-            }
+            livingEntity.OnLivingEntityStartTick();
         }
         
         // All Tickables
@@ -167,7 +168,7 @@ public class GameLogic : MonoBehaviour
             {
                 continue;
             }
-            tickable.OnStartTick(playerMoveDir);
+            tickable.OnStartTick();
         }
         
         // After start tick, do all the post start tick methods
@@ -175,7 +176,7 @@ public class GameLogic : MonoBehaviour
         // for functions that cannot be achievable with random ordering from the former Start Tick method.
         foreach (var tickable in tickables)
         {
-            tickable.PostStartTick(PlayerScript.Instance.LastMoveDir);
+            tickable.OnPostStartTick();
         }
     }
 
@@ -185,14 +186,22 @@ public class GameLogic : MonoBehaviour
         waitingForAllEndTickToFinish = true;
         var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ITickable>();
-
-        foreach (var tickable in allTickables)
+        var tickables = allTickables.ToArray();
+        foreach (var tickable in tickables)
         {
             if (excludeTypes.Length > 0 && excludeTypes.Contains(tickable.GetType()))
             {
                 continue;
             }
             tickable.OnEndTick();
+        }
+        
+        // After doing all End tick, now should do all Post end tick
+        // Remember: This method should only contain configuration variables only. This method should only be used
+        // for functions that cannot be achievable with random ordering from the former End Tick method.
+        foreach (var tickable in tickables)
+        {
+            tickable.OnPostEndTick();
         }
     }
     private void Update()
@@ -227,14 +236,6 @@ public class GameLogic : MonoBehaviour
                 }
             }
             
-            // After doing all End tich, now should do all Post end tick
-            // Remember: This method should only contain configuration variables only. This method should only be used
-            // for functions that cannot be achievable with random ordering from the former End Tick method.
-            foreach (var tickable in tickables)
-            {
-                tickable.PostEndTick();
-            }
-            
             waitingForAllEndTickToFinish = false;
             timeToCheckSchedule = true;
         }
@@ -251,7 +252,7 @@ public class GameLogic : MonoBehaviour
                 if (tickable.IsNextTickMoveScheduled || tickable.IsNextTickDestroyScheduled)
                 {
                     // print("There is something scheduled");
-                    StartTick(PlayerScript.Instance.ScheduledMoveDir);
+                    StartTick();
                     timeToCheckSchedule = false;
                     return;
                 }
@@ -262,7 +263,7 @@ public class GameLogic : MonoBehaviour
                 if (tickable.DoExtraTickLoop)
                 {
                     // print("There is something with Extra tick");
-                    StartTick(PlayerScript.Instance.ScheduledMoveDir);
+                    StartTick();
                     timeToCheckSchedule = false;
                     return;
                 }
