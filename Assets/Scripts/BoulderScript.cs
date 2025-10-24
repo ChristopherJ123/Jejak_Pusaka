@@ -77,9 +77,9 @@ public class BoulderScript : BasicMoveable
 
     protected override void OnHit(GameObject hitObject)
     {
-        if (hitObject)
+        if (hitObject && hitObject.TryGetComponent<BasicLivingEntity>(out var entity))
         {
-            if (hitObject.CompareTag("Player"))
+            if (entity.CompareTag("Player"))
             {
                 // If diagonal movement then check all collisions (2 collisions total before splatting player)
                 if (Mathf.Approximately(Mathf.Abs(LastMoveDir.x), 1f) && Mathf.Approximately(Mathf.Abs(LastMoveDir.y), 1f))
@@ -94,7 +94,7 @@ public class BoulderScript : BasicMoveable
                 GameLogic.PlayAudioClipRandom(boulderSplatSounds);
                 GameLogic.Instance.GameOver("Player terlindas oleh boulder");
                 Move(LastMoveDir);
-            } else if (hitObject.CompareTag("Mummy"))
+            } else if (entity.CompareTag("Mummy"))
             {
                 // If diagonal movement then check all collisions (2 collisions total before splatting player)
                 if (Mathf.Approximately(Mathf.Abs(LastMoveDir.x), 1f) && Mathf.Approximately(Mathf.Abs(LastMoveDir.y), 1f))
@@ -106,9 +106,10 @@ public class BoulderScript : BasicMoveable
                     }
                 }
                 hitObject.transform.localScale = new Vector3(hitObject.transform.localScale.x, hitObject.transform.localScale.y / 4, hitObject.transform.localScale.z);
-                hitObject.GetComponent<MummyScript>().IsAlive = false;
+                entity.Deactivate(); // Makes the entity a tile layer and destroys movePoint (movePoint is a collision)
                 GameLogic.PlayAudioClipRandom(boulderSplatSounds);
-                Move(LastMoveDir);
+                ScheduleFall();
+                // Move(LastMoveDir);
             }
             base.OnHit(hitObject);
         }

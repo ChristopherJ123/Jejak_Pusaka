@@ -17,17 +17,21 @@ public class FinishScript : BasicTickable
     {
         base.OnEndTick();
         
-        var collide = Physics2D.OverlapPoint(transform.position, LayerMask.GetMask("Collision"));
-        if (collide && collide.CompareTag("Player"))
+        var colliders = Physics2D.OverlapPointAll(transform.position, LayerMask.GetMask("Collision"));
+        foreach(var collide in colliders)
         {
-            if (GameLogic.Instance.shouldSaveScore)
+            if (collide && collide.CompareTag("Player"))
             {
-                GlobalGameManager.Instance.isGameEnd = isGameEnd;
-                GlobalGameManager.Instance.ChangeLevel(nextLevel, GameLogic.Instance.Score);
-            }
-            else
-            {
-                GlobalGameManager.Instance.ChangeLevel(nextLevel);
+                if (GameLogic.Instance.shouldSaveScore)
+                {
+                    GlobalGameManager.Instance.isGameEnd = isGameEnd;
+                    GlobalGameManager.Instance.ChangeLevel(nextLevel, GameLogic.Instance.Score);
+                }
+                else
+                {
+                    GlobalGameManager.Instance.ChangeLevel(nextLevel);
+                }
+                break;
             }
         }
     }

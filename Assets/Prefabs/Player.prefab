@@ -108,6 +108,7 @@ MonoBehaviour:
   moveSounds: []
   movingSound: {fileID: 0}
   hitSounds: []
+  scheduledMoveByUser: 0
   playerWaterSounds:
   - {fileID: 8300000, guid: 653450e2c89779a4a959680a5512e594, type: 3}
   playerLavaSounds:
@@ -116,7 +117,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: bb5787511f8a1294d852ee19d806d08e, type: 3}
   playerMummySounds:
   - {fileID: 8300000, guid: f4fd0b74c4f95044f976fadbbfdd606a, type: 3}
-  isAlive: 1
 --- !u!61 &1967954839141210705
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -194,7 +194,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3187980916233442705}
-  m_Layer: 0
+  - component: {fileID: 2146071827846239494}
+  m_Layer: 6
   m_Name: MovePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,3 +217,49 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5945530011207564073}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2146071827846239494
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724004979740218546}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.25, y: 0.25}
+  m_EdgeRadius: 0

@@ -112,4 +112,23 @@ public class BasicAI : BasicLivingEntity
             }
         }
     }
+    
+    public override void OnStartTick()
+    {
+        // print("Player start tick");
+        if (IsNextTickDestroyScheduled)
+        {
+            GameLogic.PlayAudioClipRandom(destroySounds);
+            gameObject.SetActive(false);
+        }
+
+        var scheduledMoveDir = ScheduledMoveDir;
+        if (CanMoveOrRedirect(ref scheduledMoveDir))
+        {
+            DoScheduledMove();
+        }
+        // Physics2D.SyncTransforms();
+        StartTickPosition = transform.position;
+    }
+
 }

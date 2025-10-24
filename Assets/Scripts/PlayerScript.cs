@@ -145,16 +145,16 @@ public class PlayerScript : BasicLivingEntity
             _moveIntervalTimer -= Time.deltaTime;
         }
         
-        if (IsStationary() && !GameLogic.Instance.waitingForAllStartTickToFinish && !GameLogic.Instance.waitingForAllEndTickToFinish)
+        if (IsAlive && IsStationary() && !GameLogic.Instance.waitingForAllStartTickToFinish && !GameLogic.Instance.waitingForAllEndTickToFinish)
         {
             if (_postMoveAndTickEnd)
             {
                 // Start end tick after moving.
                 // GameLogic.Instance.EndTick();
                 _postMoveAndTickEnd = false;
-                _moveIntervalTimer = 0.05f;
+                _moveIntervalTimer = 0.00f;
             }
-
+            
             var moveDirectionInput = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
             if (!_postMoveAndTickEnd && ((Math.Abs(moveDirectionInput.x) == 1 && moveDirectionInput.y == 0) ||

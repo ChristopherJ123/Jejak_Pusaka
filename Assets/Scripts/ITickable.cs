@@ -34,4 +34,5 @@ public interface ITickable
     void OnEndTick();
     void OnPostEndTick();
     void OnReset();
+    void Deactivate();
 }

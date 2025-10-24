@@ -20,6 +20,7 @@ public class BasicTickable : MonoBehaviour, ITickable
         if (IsNextTickDestroyScheduled)
         {
             GameLogic.PlayAudioClipRandom(destroySounds);
+            Deactivate();
             Destroy(gameObject);
         }
     }
@@ -42,6 +43,11 @@ public class BasicTickable : MonoBehaviour, ITickable
     public virtual void OnReset()
     {
         
+    }
+
+    public virtual void Deactivate()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Tile");
     }
 
     public virtual void Start()

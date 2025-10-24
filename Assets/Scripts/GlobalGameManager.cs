@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -13,12 +14,14 @@ public class GlobalGameManager : MonoBehaviour
     public string teamName = "";
     [HideInInspector]
     public bool isGameEnd;
-    private readonly float _timeLimit = 600;
+    private readonly float _timeLimit = 720;
     public float elapsedTime;
     public bool isTimerStarted;
     public int scorePerTreasure = 100;
     
     private bool _hasTriggeredZeroEvent = false;
+    [HideInInspector]
+    public PersistentScoreManager persistentScoreManager;
     
     public int TotalScore { get; private set; }
 
@@ -30,13 +33,14 @@ public class GlobalGameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             
             audioSource = GetComponent<AudioSource>();
+            persistentScoreManager = GetComponent<PersistentScoreManager>();
         }
         else if (Instance != this)
         {
             Destroy(gameObject); // destroy duplicates
         }
     }
-    
+
     private void Update()
     {
         if (!isTimerStarted) return;

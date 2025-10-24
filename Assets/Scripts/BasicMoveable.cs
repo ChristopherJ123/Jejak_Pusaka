@@ -30,6 +30,12 @@ public class BasicMoveable : BasicTickable, IMoveable
     public bool IsSlopeMoveable { get; set; }
     public bool IsPinballSlopeMoveable { get; set; }
     public bool IsBoulderSlopeMoveable { get; set; }
+    
+    public override void Deactivate()
+    {
+        base.Deactivate();
+        Destroy(MovePoint.gameObject);
+    }
 
     /// <summary>
     /// Tickable object is idle.
@@ -47,9 +53,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         {
             if (col.TryGetComponent<BasicLivingEntity>(out var entity))
             {
-                print($"{entity.name}, IsNextTickMoveScheduled={entity.IsNextTickMoveScheduled}, {entity.transform.position}+{entity.ScheduledMoveDir}={transform.position}");
                 livingEntity = entity;
-                print($"{entity.name}, {entity.IsNextTickMoveScheduled && entity.transform.position + entity.ScheduledMoveDir == transform.position}");
                 return entity.IsNextTickMoveScheduled &&
                        entity.transform.position + entity.ScheduledMoveDir == transform.position;
             }
@@ -76,25 +80,9 @@ public class BasicMoveable : BasicTickable, IMoveable
         // 4. check if there is a pinball slope move redirect
         moveDir = SlopeGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
         
-        // 5. check if it is out of bounds (not touching any Tile Layer)
-        if (Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
-        {
-            // 6. it checks if it is not colliding with another Collision Layer
-            if (!Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement))
-            {
-                // print(transform.name + $" is NOT colliding with something, moveDir={moveDir}");;
-                // print($"FINAL {transform.name} moveDir now={moveDir} going to={transform.position + moveDir}");
-                return true;
-            }
-            // else
-            // {
-            //     print(transform.name + " is colliding with something");;
-            // }
-        }
-        // print($"FINAL RETURN FALSE {transform.name} moveDir now={moveDir} going to={transform.position + moveDir}");
-        return false;
+        return GameLogic.IsSpaceAvailable(transform.position + moveDir);
     }
-
+    
     public void ScheduleMove(Vector3 moveDir, bool doExtraTickLoop = false)
     {
         IsTriggered = true;
@@ -110,7 +98,11 @@ public class BasicMoveable : BasicTickable, IMoveable
             if (!IsHitSoundScheduled) GameLogic.PlayAudioClipRandom(triggerSounds);
             // if (movingSound) print($"Playing {transform.name} moving sound {movingSound.name} with moveDir {ScheduledMoveDir}");
             LoopingAudioPlayer.PlayAudioClipLoop(movingSound);
+            // var scheduledMoveDir = ScheduledMoveDir;
+            // if (CanMoveOrRedirect(ref scheduledMoveDir))
+            // {
             Move(ScheduledMoveDir);
+            // }
             LastMoveDir = ScheduledMoveDir;
             IsHitSoundScheduled = true;
         } else if(IsHitSoundScheduled)
@@ -161,6 +153,9 @@ public class BasicMoveable : BasicTickable, IMoveable
         GameLogic.PlayAudioClipRandom(moveSounds);
     }
 
+    /// <summary>
+    /// Called on Start Tick when there is a hit.
+    /// </summary>
     protected virtual void OnHit()
     {
         // print("playing hit sound");

@@ -1760,7 +1760,7 @@ GameObject:
   - component: {fileID: 1093997148}
   - component: {fileID: 1093997147}
   - component: {fileID: 1093997146}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tilemap
   m_TagString: Lava
   m_Icon: {fileID: 0}

@@ -23,45 +23,32 @@ public class MummyScript : BasicAI
     /// </summary>
     /// <param name="moveDir">Player move dir</param>
     /// <returns>Check succeed</returns>
-    public override bool CanMoveOrRedirect(ref Vector3 moveDir)
-    {
-        IsNextTickMoveScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
-        
-        // First check if player hits a pinball and needs a moveDir redirect
-        moveDir = PinballGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
-
-        // Thirdly check if player can move entities, more detailed see method docs
-        var result = LivingEntityMoveCondition(moveDir);
-        
-        // Custom check, just like GameLogic's IsSpaceAvailable but modified.
-        if (result && Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
-        {
-            // Lastly Check if mummy is not colliding with an IMoveable
-            var colide = Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement);
-            if (colide && !colide.TryGetComponent<IMoveable>(out _))
-            {
-                return false;
-            }
-            return true;
-        }
-        IsNextTickMoveScheduled = false;
-        
-        return false;
-    }
+    // public override bool CanMoveOrRedirect(ref Vector3 moveDir)
+    // {
+    //     IsNextTickMoveScheduled = true; // Setting this to true so that the CanMove()'s PreStartTick()'s IsPlayerPushing() method works.
+    //     
+    //     // First check if player hits a pinball and needs a moveDir redirect
+    //     moveDir = PinballGlobalScript.RedirectMoveFromPinballIfAny(gameObject, moveDir);
+    //
+    //     // Thirdly check if player can move entities, more detailed see method docs
+    //     var result = LivingEntityMoveCondition(moveDir);
+    //     
+    //     // Custom check, just like GameLogic's IsSpaceAvailable but modified.
+    //     if (result && Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
+    //     {
+    //         // Lastly Check if mummy is not colliding with an IMoveable
+    //         var colide = Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement);
+    //         if (colide && !colide.TryGetComponent<IMoveable>(out _))
+    //         {
+    //             return false;
+    //         }
+    //         return true;
+    //     }
+    //     IsNextTickMoveScheduled = false;
+    //     
+    //     return false;
+    // }
     
-    public override void OnStartTick()
-    {
-        // print("Player start tick");
-        if (IsNextTickDestroyScheduled)
-        {
-            GameLogic.PlayAudioClipRandom(destroySounds);
-            gameObject.SetActive(false);
-        }
-        
-        DoScheduledMove();
-        StartTickPosition = transform.position;
-    }
-
     public override void OnEndTick()
     {
         base.OnEndTick();

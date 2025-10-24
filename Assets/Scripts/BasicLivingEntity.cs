@@ -22,7 +22,6 @@ public class BasicLivingEntity : BasicMoveable, ILivingEntity
         {
             if (moveable.IsLivingEntityPushing(out var livingEntity))
             {
-                print("SOMEHOME THIS IS TRUE");
                 if (moveable.CanMoveOrRedirect(ref moveDir))
                 {
                     print($"{livingEntity.name} can move to {moveDir}");
@@ -41,12 +40,19 @@ public class BasicLivingEntity : BasicMoveable, ILivingEntity
         if (PlayerScript.Instance.IsNextTickMoveScheduled && PlayerScript.Instance.scheduledMoveByUser && IsAlive)
         {
             ScheduleAutoMove();
+            PlayMoveSound();
         }
-        PlayMoveSound();
     }
 
     public virtual void ScheduleAutoMove()
     {
+    }
+
+    public override void Deactivate()
+    {
+        base.Deactivate();
+        IsAlive = false;
+        SpriteRenderer.sortingLayerName = "Default";
     }
 
     public virtual void Awake()

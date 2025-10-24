@@ -56,6 +56,7 @@ public class GameLogic : MonoBehaviour
     public void GameOver(string message)
     {
         PlayerScript.Instance.IsAlive = false;
+        PlayerScript.Instance.Deactivate();
         GameLogicUI.Instance.ShowDeathScreen(message);
     }
 
@@ -89,8 +90,35 @@ public class GameLogic : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Checks if a space at the provided coordinates is available for movement.
+    /// </summary>
+    /// <param name="coordinates">The world coordinates to check for space availability.</param>
+    /// <returns>Returns true if the space is available for movement; otherwise, false.</returns>
     public static bool IsSpaceAvailable(Vector3 coordinates)
     {
+        return Physics2D.OverlapPoint(coordinates, LayerAllowsMovement) && !Physics2D.OverlapPoint(coordinates, LayerBlocksMovement);
+    }
+    
+    /// <summary>
+    /// Check if space is available at a certain coordinate in the world.
+    /// </summary>
+    /// <param name="coordinates">World coordinates</param>
+    /// <param name="excludeTypes">Types in excludeTypes will get ignored and returns true</param>
+    /// <returns>Returns true if the space is available for movement; otherwise, false.</returns>
+    public static bool IsSpaceAvailable(Vector3 coordinates, params Type[] excludeTypes)
+    {
+        var collider = Physics2D.OverlapPoint(coordinates, LayerBlocksMovement);
+        if (collider && excludeTypes.Length > 0)
+        {
+            foreach (var type in excludeTypes)
+            {
+                if (collider.GetComponent(type))
+                {
+                    return Physics2D.OverlapPoint(coordinates, LayerAllowsMovement);
+                }
+            }
+        }
         return Physics2D.OverlapPoint(coordinates, LayerAllowsMovement) && !Physics2D.OverlapPoint(coordinates, LayerBlocksMovement);
     }
     
@@ -169,6 +197,7 @@ public class GameLogic : MonoBehaviour
                 continue;
             }
             tickable.OnStartTick();
+            // Physics2D.SyncTransforms();
         }
         
         // After start tick, do all the post start tick methods
