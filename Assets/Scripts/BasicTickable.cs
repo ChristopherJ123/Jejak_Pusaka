@@ -21,6 +21,7 @@ public class BasicTickable : MonoBehaviour, ITickable
         {
             GameLogic.PlayAudioClipRandom(destroySounds);
             Deactivate();
+            // print("DESTROYING BOULDER SO IT SHOULD NOT PLAY DOSCHEDULE SOUND"); // Actually this won't work, Destroy() is not immediate.
             Destroy(gameObject);
         }
     }

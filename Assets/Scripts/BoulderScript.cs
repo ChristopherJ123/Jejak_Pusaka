@@ -77,8 +77,10 @@ public class BoulderScript : BasicMoveable
 
     protected override void OnHit(GameObject hitObject)
     {
+        // print($"BOULDER HIT EVENT");
         if (hitObject && hitObject.TryGetComponent<BasicLivingEntity>(out var entity))
         {
+            // print($"BOULDER HIT {hitObject.name}");
             if (entity.CompareTag("Player"))
             {
                 // If diagonal movement then check all collisions (2 collisions total before splatting player)
@@ -167,12 +169,14 @@ public class BoulderScript : BasicMoveable
         {
             destroySounds = boulderWaterSounds;
             IsNextTickDestroyScheduled = true;
+            return;
         }
-        else if (onLava)
+        if (onLava)
         {
             destroySounds = boulderLavaSounds;
             Instantiate(boulderFloatingPrefab, transform.position, Quaternion.identity);
             IsNextTickDestroyScheduled = true;
+            return;
         }
         
         // Logic part

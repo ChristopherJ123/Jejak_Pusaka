@@ -17,6 +17,7 @@ public interface IMoveable
     /// Entity will slide of Boulder (e.g. Boulder hitting boulder, arrow hitting boulder)
     /// </summary>
     bool IsBoulderSlopeMoveable { get; set; }
+    bool IsDeactivated { get; set; }
 
     bool IsStationary();
     bool IsLivingEntityPushing(out BasicLivingEntity livingEntity);

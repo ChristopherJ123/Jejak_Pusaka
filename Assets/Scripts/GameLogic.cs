@@ -169,6 +169,7 @@ public class GameLogic : MonoBehaviour
         waitingForAllStartTickToFinish = true;
         
         // All Living Entities first
+        // (No ordering neede because for now there is only mummy and player (player doesn't do anything on OnLivingEntityStartTick))
         var allLivingEntities = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ILivingEntity>();
         foreach (var livingEntity in allLivingEntities)
@@ -181,12 +182,14 @@ public class GameLogic : MonoBehaviour
         }
         
         // All Tickables
+        // Alasan di order seperti ini: Pertama, kita utamain bisa dorong moveable dulu seperti crate
+        // sebelum mummy jalan duluan. Jadi ordernya Player -> Crate -> Mummy
         var allTickables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<ITickable>().OrderBy(obj =>
             {
                 if (obj is PlayerScript) return 0;
-                if (obj is BasicAI) return 1;
-                return 2;
+                if (obj is BasicAI) return 2;
+                return 1;
             });
 
         var tickables = allTickables.ToArray();
@@ -197,7 +200,10 @@ public class GameLogic : MonoBehaviour
                 continue;
             }
             tickable.OnStartTick();
-            // Physics2D.SyncTransforms();
+            
+            // Apa yang terjadi kalau enable ini?
+            // print("Physics2D Sync transforms");
+            Physics2D.SyncTransforms();
         }
         
         // After start tick, do all the post start tick methods

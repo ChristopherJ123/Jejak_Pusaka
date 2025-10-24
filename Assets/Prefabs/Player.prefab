@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 2146071827846239494}
   m_Layer: 6
   m_Name: MovePoint
-  m_TagString: Untagged
+  m_TagString: MovePoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

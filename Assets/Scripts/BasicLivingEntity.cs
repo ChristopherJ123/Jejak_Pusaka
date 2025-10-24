@@ -16,15 +16,16 @@ public class BasicLivingEntity : BasicMoveable, ILivingEntity
         }
         
         var allMoveables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-            .OfType<IMoveable>();
+            .OfType<BasicMoveable>();
 
         foreach (var moveable in allMoveables)
         {
             if (moveable.IsLivingEntityPushing(out var livingEntity))
             {
+                // print($"{livingEntity.name} is pushing {moveable.name}");
                 if (moveable.CanMoveOrRedirect(ref moveDir))
                 {
-                    print($"{livingEntity.name} can move to {moveDir}");
+                    // print($"{livingEntity.name} can move {moveable.name} to {moveDir}");
                     return true;
                 }
                 return false;

@@ -30,10 +30,12 @@ public class BasicMoveable : BasicTickable, IMoveable
     public bool IsSlopeMoveable { get; set; }
     public bool IsPinballSlopeMoveable { get; set; }
     public bool IsBoulderSlopeMoveable { get; set; }
-    
+    public bool IsDeactivated { get; set; }
+
     public override void Deactivate()
     {
         base.Deactivate();
+        IsDeactivated = true;
         Destroy(MovePoint.gameObject);
     }
 
@@ -49,17 +51,21 @@ public class BasicMoveable : BasicTickable, IMoveable
     public virtual bool IsLivingEntityPushing(out BasicLivingEntity livingEntity)
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1, LayerStopsMovement);
+        var isLivingEntityPushing = false;
+        livingEntity = null;
         foreach (var col in colliders)
         {
             if (col.TryGetComponent<BasicLivingEntity>(out var entity))
             {
+                // print($"DETECTING {entity.name}");
                 livingEntity = entity;
-                return entity.IsNextTickMoveScheduled &&
-                       entity.transform.position + entity.ScheduledMoveDir == transform.position;
+                isLivingEntityPushing = entity.IsNextTickMoveScheduled && 
+                                        entity.transform.position + entity.ScheduledMoveDir == transform.position;
+                // print($"isLivingEntityPushing = {isLivingEntityPushing}");
+                if (isLivingEntityPushing) break;
             }
         }
-        livingEntity = null;
-        return false;
+        return isLivingEntityPushing;
     }
 
     public virtual bool CanMoveOrRedirect(ref Vector3 moveDir)
@@ -105,10 +111,22 @@ public class BasicMoveable : BasicTickable, IMoveable
             // }
             LastMoveDir = ScheduledMoveDir;
             IsHitSoundScheduled = true;
-        } else if(IsHitSoundScheduled)
+        } 
+        // Not Doing scheduled move, but still need to play hit sound if there is one.
+        else if(IsHitSoundScheduled)
         {
-            Collider2D hitCollider;
-            hitCollider = Physics2D.OverlapPoint(transform.position + LastMoveDir, LayerStopsMovement);
+            // Make it so that it filters out MovePoint
+            Collider2D finalHitCollider = null;
+            var allHitColliders = Physics2D.OverlapPointAll(transform.position + LastMoveDir, LayerStopsMovement);
+            foreach (var hitCollider in allHitColliders)
+            {
+                // print($"Hit collider is {hitCollider.name} with LastMoveDir {LastMoveDir}");
+                if (hitCollider && !hitCollider.CompareTag("MovePoint"))
+                {
+                    finalHitCollider = hitCollider;
+                    // print($"Final hit collider is {finalHitCollider.name}");
+                }
+            }
             
             // // Hardcode for now
             // if (transform.CompareTag("Boulder"))
@@ -127,7 +145,7 @@ public class BasicMoveable : BasicTickable, IMoveable
             //     }
             // }
             
-            if (hitCollider) OnHit(hitCollider.gameObject);
+            if (finalHitCollider) OnHit(finalHitCollider.gameObject);
             else OnHit();
         }
     }
@@ -136,6 +154,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     {
         // DateTime now = DateTime.Now;
         // print($"Moving {transform.name} Current Time: {now:HH:mm:ss.fff}");
+        // print($"Moving {transform.name}");
         if (_animator)
         {
             _animator.SetBool(IsMoving, true);
@@ -149,7 +168,7 @@ public class BasicMoveable : BasicTickable, IMoveable
 
     public virtual void PlayMoveSound()
     {
-        if (moveSounds.Length > 0) print($"Playing move sounds for {transform.name} with moveDir {LastMoveDir}");
+        // if (moveSounds.Length > 0) print($"Playing move sounds for {transform.name} with moveDir {LastMoveDir}");
         GameLogic.PlayAudioClipRandom(moveSounds);
     }
 
@@ -166,6 +185,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     
     protected virtual void OnHit(GameObject hitObject)
     {
+        if (IsDeactivated) return;
         // print("playing hit sound");
         GameLogic.PlayAudioClipRandom(hitSounds);
         IsHitSoundScheduled = false;
@@ -242,6 +262,7 @@ public class BasicMoveable : BasicTickable, IMoveable
         
         MovePoint = transform.GetChild(0);
         MovePoint.parent = null;
+        MovePoint.name = $"{transform.name}MovePoint";
     }
 
     public virtual void Update()

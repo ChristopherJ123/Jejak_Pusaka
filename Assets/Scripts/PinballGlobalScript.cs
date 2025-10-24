@@ -46,6 +46,7 @@ public class PinballGlobalScript : MonoBehaviour
                 {
                     GameLogic.PlayAudioClipRandom(_pinballTriggerSounds);
                     // Move mirrored back
+                    print($"{entity.name} move should be mirrored back.");
                     return -initialMoveDir;
                 }
             }

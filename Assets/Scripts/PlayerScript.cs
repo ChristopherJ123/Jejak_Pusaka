@@ -46,10 +46,13 @@ public class PlayerScript : BasicLivingEntity
         if (result && Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerAllowMovement))
         {
             // Lastly Check if player is not colliding with an IMoveable or treasure
-            var colide = Physics2D.OverlapPoint(MovePoint.transform.position + moveDir, LayerStopsMovement);
-            if (colide && !colide.TryGetComponent<IMoveable>(out _) && !colide.TryGetComponent<TreasureScript>(out _))
+            var colliders = Physics2D.OverlapPointAll(MovePoint.transform.position + moveDir, LayerStopsMovement);
+            foreach (var overlappingCollider in colliders)
             {
-                return false;
+                if (overlappingCollider && !overlappingCollider.TryGetComponent<IMoveable>(out _) && !overlappingCollider.TryGetComponent<TreasureScript>(out _) && !overlappingCollider.CompareTag("MovePoint"))
+                {
+                    return false;
+                }
             }
             return true;
         }
@@ -66,8 +69,13 @@ public class PlayerScript : BasicLivingEntity
             GameLogic.PlayAudioClipRandom(destroySounds);
             gameObject.SetActive(false);
         }
-        
-        DoScheduledMove();
+
+        var scheduledMoveDir = ScheduledMoveDir;
+        if (CanMoveOrRedirect(ref scheduledMoveDir))
+        {
+            ScheduledMoveDir = scheduledMoveDir;
+            DoScheduledMove();
+        }
         StartTickPosition = transform.position;
     }
 
@@ -161,6 +169,7 @@ public class PlayerScript : BasicLivingEntity
                                (Math.Abs(moveDirectionInput.y) == 1 && moveDirectionInput.x == 0)
                                ) && !GameLogic.Instance.waitingForAllEndTickToFinish && _moveIntervalTimer <= 0)
             {
+                // print("CAN MOVE");
                 ScheduleMove(moveDirectionInput);
                 scheduledMoveByUser = true;
                 GameLogic.Instance.StartTick();

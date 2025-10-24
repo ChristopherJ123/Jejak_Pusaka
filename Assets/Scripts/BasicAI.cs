@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,6 +14,7 @@ public class BasicAI : BasicLivingEntity
             var collisionPoint = Physics2D.OverlapPoint(node.WorldPos + moveDir, LayerStopsMovement);
             if (GameLogic.IsSpaceAvailable(node.WorldPos + moveDir) || (collisionPoint && collisionPoint.TryGetComponent<BasicLivingEntity>(out _)))
             {
+                print($"Adding neighbour {moveDir} to {node.WorldPos}");
                 neighbours.Add(new Node(node.WorldPos + moveDir));
             }
         }
@@ -35,10 +35,26 @@ public class BasicAI : BasicLivingEntity
         return pathPoints;
     }
     
+    private Vector3 SnapToGrid(Vector3 worldPosition)
+    {
+        // Round to the nearest integer position
+        return new Vector3(
+            Mathf.Floor(worldPosition.x) + 0.5f,
+            Mathf.Floor(worldPosition.y) + 0.5f,
+            0
+        );
+    }
+    
     private List<Vector3> FindShortestPathToPlayer()
     {
-        Node startNode = new Node(transform.position);
-        Node targetNode = new Node(PlayerScript.Instance.transform.position);
+        Physics2D.SyncTransforms(); // <-- ADD THIS LINE // TETEP GAK ISO ANOMALI COKK, Unity ne sumpah gak jelas iki. Jadi pas awal di play aman" ae lancar, pas di restart scene e pake SceneManager.LoadScene(SceneManager.GetActiveScene().name); LANGSUNG EROR KABEH COKKK ai ne di first move player gak jalan entah knp, tapi lek kamu baru start game AI ne jalan kok pas player pertama kali jalan.
+        
+        // Snap positions to the grid
+        Vector3 startPos = SnapToGrid(transform.position);
+        Vector3 targetPos = SnapToGrid(PlayerScript.Instance.transform.position);
+        
+        Node startNode = new Node(startPos);
+        Node targetNode = new Node(targetPos);
         
         List<Node> openList = new List<Node>{startNode};
         HashSet<Vector3> closedSet = new HashSet<Vector3>();
@@ -66,6 +82,7 @@ public class BasicAI : BasicLivingEntity
             // Check if we reached the goal
             if (currentNode.WorldPos == targetNode.WorldPos)
             {
+                print("FOUND PLAYER");
                 return RetracePath(startNode, currentNode);
             }
 
@@ -108,8 +125,17 @@ public class BasicAI : BasicLivingEntity
             var scheduledMoveDir = path[0] - transform.position;
             if (CanMoveOrRedirect(ref scheduledMoveDir))
             {
+                print("Auto move is scheduled");
                 ScheduleMove(scheduledMoveDir);
             }
+            else
+            {
+                print("Auto move schedule failed");
+            }
+        }
+        else
+        {
+            print("Auto move schedule failed");
         }
     }
     
@@ -125,6 +151,7 @@ public class BasicAI : BasicLivingEntity
         var scheduledMoveDir = ScheduledMoveDir;
         if (CanMoveOrRedirect(ref scheduledMoveDir))
         {
+            print($"{transform.name} can move to {scheduledMoveDir}");
             DoScheduledMove();
         }
         // Physics2D.SyncTransforms();

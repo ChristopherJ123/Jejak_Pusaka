@@ -23,7 +23,7 @@ public class GlobalGameManager : MonoBehaviour
     [HideInInspector]
     public PersistentScoreManager persistentScoreManager;
     
-    public int TotalScore { get; private set; }
+    public int TotalScore { get; set; }
 
     void Awake()
     {
@@ -75,7 +75,6 @@ public class GlobalGameManager : MonoBehaviour
             OnTimerEnd();
         }
     }
-    
     private void OnTimerEnd()
     {
         Debug.Log("⏰ Time's up!");

@@ -56,6 +56,12 @@ public class TitleScreenScript : MonoBehaviour
             // _tutorialButton.SetActive(false);
             
             GlobalGameManager.Instance.persistentScoreManager.RecordScore(GlobalGameManager.Instance.teamName, GlobalGameManager.Instance.TotalScore);
+            
+            // Reset Global Game Manager
+            GlobalGameManager.Instance.isGameEnd = false;
+            GlobalGameManager.Instance.elapsedTime = 0;
+            GlobalGameManager.Instance.TotalScore = 0;
+            GlobalGameManager.Instance.isTimerStarted = false;
         }
     }
 
