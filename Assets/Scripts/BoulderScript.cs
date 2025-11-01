@@ -71,6 +71,7 @@ public class BoulderScript : BasicMoveable
         if (CanMoveOrRedirect(ref fallDirection))
         {
             isTriggeredNear = true;
+            print($"{transform.name} IS SCHEDULED MOVE");
             ScheduleMove(fallDirection, true);
         }
     }
@@ -128,10 +129,15 @@ public class BoulderScript : BasicMoveable
 
         if (IsBoulderPushing() && GameLogic.IsSpaceAvailable(transform.position + Vector3.down))
         {
+            if (IsNextTickMoveScheduled)
+            {
+                return; // If there's a scheduled move, don't push boulder for now.
+            }
             var down = Vector3.down;
             if (CanMoveOrRedirect(ref down))
             {
                 // print($"{transform.name} is boulder pushing");
+                print($"{transform.name} IS BEING PUSHED DOWN");
                 PlayMoveSound();
                 Move(down);
             }

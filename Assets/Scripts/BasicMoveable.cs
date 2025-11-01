@@ -36,6 +36,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     {
         base.Deactivate();
         IsDeactivated = true;
+        print($"{transform.name} IS DEACTIVATED");
         Destroy(MovePoint.gameObject);
     }
 
@@ -177,7 +178,8 @@ public class BasicMoveable : BasicTickable, IMoveable
     /// </summary>
     protected virtual void OnHit()
     {
-        // print("playing hit sound");
+        if (IsDeactivated) return;
+        // print($"PLAYING {transform.name} HIT SOUND2");
         GameLogic.PlayAudioClipRandom(hitSounds);
         IsHitSoundScheduled = false;
         LoopingAudioPlayer.StopLooping();
@@ -186,7 +188,7 @@ public class BasicMoveable : BasicTickable, IMoveable
     protected virtual void OnHit(GameObject hitObject)
     {
         if (IsDeactivated) return;
-        // print("playing hit sound");
+        // print($"PLAYING {transform.name} HIT SOUND");
         GameLogic.PlayAudioClipRandom(hitSounds);
         IsHitSoundScheduled = false;
         LoopingAudioPlayer.StopLooping();

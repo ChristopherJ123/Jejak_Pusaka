@@ -22,6 +22,8 @@ public class TitleScreenScript : MonoBehaviour
     [SerializeField]
     private TMP_Text finalScoreText;
     public GameObject leaderboardEntryPrefab;
+
+    private int _levelStart;
     
     private void Awake()
     {
@@ -63,6 +65,20 @@ public class TitleScreenScript : MonoBehaviour
             GlobalGameManager.Instance.TotalScore = 0;
             GlobalGameManager.Instance.isTimerStarted = false;
         }
+    }
+
+    public void PlayElim()
+    {
+        _levelStart = 2;
+        GlobalGameManager.Instance.scorePerTreasure = 100;
+        ShowTeamInput();
+    }
+    
+    public void PlaySemi()
+    {
+        _levelStart = 5;
+        GlobalGameManager.Instance.scorePerTreasure = 10;
+        ShowTeamInput();
     }
 
     public void ShowTeamInput()
@@ -136,7 +152,12 @@ public class TitleScreenScript : MonoBehaviour
     public void StartGame()
     {
         GlobalGameManager.Instance.teamName = _teamNameInput.text;
-        LoadSceneByName("2");
+        LoadSceneByName(_levelStart.ToString());;
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
     
     public void LoadSceneByName(string sceneName)

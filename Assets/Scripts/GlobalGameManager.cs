@@ -74,6 +74,12 @@ public class GlobalGameManager : MonoBehaviour
             _hasTriggeredZeroEvent = true;
             OnTimerEnd();
         }
+
+        // Exit game
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            OnTimerEnd();
+        }
     }
     private void OnTimerEnd()
     {
